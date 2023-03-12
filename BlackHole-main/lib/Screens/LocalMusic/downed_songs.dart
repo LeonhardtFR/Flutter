@@ -384,6 +384,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                           : Theme.of(context).colorScheme.secondary,
                   elevation: 0,
                 ),
+
                 body: !added
                     ? const Center(
                         child: CircularProgressIndicator(),
