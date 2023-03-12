@@ -34,6 +34,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   file_picker: ^5.2.5
   just_audio: ^0.9.31
+  on_audio_query: ^2.6.2
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:
