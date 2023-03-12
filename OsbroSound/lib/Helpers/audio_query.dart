@@ -1,6 +1,6 @@
 import 'package:on_audio_query/on_audio_query.dart';
 
-class AudioQuery {
+class OfflineAudioQuery {
   static OnAudioQuery audioQuery = OnAudioQuery();
   static final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
 
@@ -75,9 +75,6 @@ class AudioQuery {
     String? path,
   }) async {
     return audioQuery.queryArtists(
-        sortType: sortType,
-        orderType: orderType,
-        uriType: UriType.EXTERNAL
-    );
+        sortType: sortType, orderType: orderType, uriType: UriType.EXTERNAL);
   }
 }
