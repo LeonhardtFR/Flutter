@@ -29,20 +29,21 @@ class _listScreenState extends State<listScreen> {
               );
             },
           )
-
-            // child: ListView(
-            //   children: const [
-            //     Card(
-            //       child: ListTile(
-            //         leading: Icon(Icons.abc, size: 56),
-            //         title: Text('Titre de la liste1'),
-            //         subtitle: Text('Informations de la liste.'),
-            //         trailing: Icon(Icons.more_vert),
-            //       ),
-            //     ),
-            //   ],
-            // )
         )
     );
   }
 }
+
+// -----Liste statique------
+// child: ListView(
+//   children: const [
+//     Card(
+//       child: ListTile(
+//         leading: Icon(Icons.abc, size: 56),
+//         title: Text('Titre de la liste1'),
+//         subtitle: Text('Informations de la liste.'),
+//         trailing: Icon(Icons.more_vert),
+//       ),
+//     ),
+//   ],
+// )
