@@ -115,7 +115,7 @@ class OfflineAudioQuery {
     required String fileName,
     int size = 200,
     int quality = 100,
-    ArtworkFormat format = ArtworkFormat.JPEG,
+    ArtworkFormat format = ArtworkFormat.PNG,
     ArtworkType artworkType = ArtworkType.AUDIO,
     BorderRadius? borderRadius,
     Clip clipBehavior = Clip.antiAlias,

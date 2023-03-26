@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -12,6 +13,24 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:logging/logging.dart';
 
+late AudioHandler _audioHandler;
+
+
+// Future<void> audioHandler() async {
+//   _audioHandler = await AudioService.init(
+//     builder: () => BackgroundAudio(),
+//     config: const AudioServiceConfig(
+//       androidNotificationChannelId: 'com.osbro.osbrosound',
+//       androidNotificationChannelName: 'OsbroSound',
+//       androidNotificationIcon: 'mipmap/ic_launcher',
+//       androidStopForegroundOnPause: true,
+//       androidResumeOnClick: true,
+//       androidShowNotificationBadge: true,
+//       androidNotificationOngoing: true,
+//     ),
+//   );
+// }
+
 class LibraryPage extends StatefulWidget {
   const LibraryPage({Key? key}) : super(key: key);
 
@@ -21,7 +40,7 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
-  List<SongModel> _songs = [];
+  List<SongModel> listSongs = [];
 
   String? tempPath = '/storage/emulated/0/Music';
 
@@ -46,6 +65,7 @@ class _LibraryPageState extends State<LibraryPage>
 
   @override
   void initState() {
+    // audioHandler();
     _tabController = TabController(length: 4, vsync: this);
     getMusic();
     // requestPermission();
@@ -65,7 +85,7 @@ class _LibraryPageState extends State<LibraryPage>
       await Permission.manageExternalStorage.request();
       await offlineAudioQuery.requestPermission();
 
-      _songs = List<SongModel>.from(await offlineAudioQuery.getSongs(
+      listSongs = List<SongModel>.from(await offlineAudioQuery.getSongs(
           sortType: SongSortType.DISPLAY_NAME,
           orderType: OrderType.ASC_OR_SMALLER));
     } catch (e) {
@@ -132,7 +152,7 @@ class _LibraryPageState extends State<LibraryPage>
                 : TabBarView(
                     controller: _tabController,
                     children: [
-                      MusicTab(musicList: _songs, tempPath: tempPath!),
+                      MusicTab(listSongs: listSongs, tempPath: tempPath!),
                       const Center(
                           child: Text('Albums',
                               style: TextStyle(color: Colors.white))),
@@ -152,10 +172,10 @@ class _LibraryPageState extends State<LibraryPage>
 }
 
 class MusicTab extends StatefulWidget {
-  final List musicList;
   final String tempPath;
+  List<SongModel> listSongs = [];
 
-  const MusicTab({Key? key, required this.musicList, required this.tempPath})
+  MusicTab({Key? key, required this.listSongs, required this.tempPath})
       : super(key: key);
 
   @override
@@ -172,36 +192,36 @@ class _MusicTabState extends State<MusicTab>
     var controller = Get.put(PlayerController());
     super.build(context);
     return ListView.builder(
-      itemCount: widget.musicList.length,
+      itemCount: widget.listSongs.length,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         return Container(
           margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
           child: ListTile(
             leading: OfflineAudioQuery.offlineArtworkWidget(
-              id: widget.musicList[index].id,
+              id: widget.listSongs[index].id,
               type: ArtworkType.AUDIO,
               tempPath: widget.tempPath,
-              fileName: widget.musicList[index].displayNameWOExt,
+              fileName: widget.listSongs[index].displayNameWOExt,
             ),
             title: Text(
-              widget.musicList[index].title.trim() != ''
-                  ? widget.musicList[index].title
-                  : widget.musicList[index].displayNameWOExt,
+              widget.listSongs[index].title.trim() != ''
+                  ? widget.listSongs[index].title
+                  : widget.listSongs[index].displayNameWOExt,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: Colors.white),
             ),
             subtitle: Text(
-              widget.musicList[index].artist,
+              widget.listSongs[index].artist!,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: Colors.white),
             ),
             onTap: () {
-              // print(widget.musicList[index]);
-              controller.playMusic(widget.musicList, index);
-              Get.to(() => Player(
-                    song: widget.musicList[index],
-                    musicList: [...widget.musicList],
+              // print(widget.songs[index].uri);
+              controller.playMusic(widget.listSongs[index].uri, index);
+              Get.to(() =>
+                  Player(
+                    listSongs: widget.listSongs,
                     tempPath: widget.tempPath,
                   ));
             },

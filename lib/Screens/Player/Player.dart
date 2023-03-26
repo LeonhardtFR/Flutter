@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -6,17 +7,26 @@ import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
 
 class Player extends StatelessWidget {
-  Player(
-      {Key? key,
-      required this.tempPath,
-      required this.song,
-      required this.musicList})
-      : super(key: key);
+  final List<SongModel> listSongs;
+  Player({Key? key, required this.tempPath, required this.listSongs}) : super(key: key);
 
-  final SongModel song;
-  final List musicList;
+  // final List musicList;
   var controller = Get.find<PlayerController>();
   final String tempPath;
+
+  late AudioHandler _audioHandler;
+
+  var item = MediaItem(
+    id: 'https://example.com/audio.mp3',
+    album: 'Album name',
+    title: 'Track title',
+    artist: 'Artist name',
+    duration: const Duration(milliseconds: 123456),
+    artUri: Uri.parse('https://example.com/album.jpg'),
+  );
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,18 +40,16 @@ class Player extends StatelessWidget {
             Expanded(
                 child: Obx(
               () => Container(
-                height: 250,
-                width: 250,
                 decoration: const BoxDecoration(shape: BoxShape.circle),
                 alignment: Alignment.center,
                 child: OfflineAudioQuery.offlineArtworkWidget(
-                  id: musicList[controller.playIndex.value].id,
+                  id: listSongs[controller.playIndex.value].id,
                   type: ArtworkType.AUDIO,
-                  fileName:
-                      musicList[controller.playIndex.value].displayNameWOExt,
+                  fileName: listSongs[controller.playIndex.value].displayNameWOExt,
                   tempPath: tempPath,
-                  width: 250,
-                  height: 250,
+                  quality: 1000,
+                  width: 300,
+                  height: 300,
                 ),
               ),
             )),
@@ -58,28 +66,21 @@ class Player extends StatelessWidget {
                   () => Column(
                     children: [
                       Text(
-                          musicList[controller.playIndex.value]
+                          listSongs[controller.playIndex.value]
                               .displayNameWOExt,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                              fontSize: 36,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.white)),
                       const SizedBox(height: 16),
                       Text(
-                          musicList[controller.playIndex.value]
-                              .artist
-                              .toString(),
-                          style: const TextStyle(
-                              fontSize: 20, color: Colors.white)),
-                      const SizedBox(height: 16),
-                      Text(
-                          musicList[controller.playIndex.value]
+                          listSongs[controller.playIndex.value]
                               .album
                               .toString(),
                           style: const TextStyle(
-                              fontSize: 20, color: Colors.white)),
-                      const SizedBox(height: 16),
+                              fontSize: 16, color: Colors.white)),
+                      // const SizedBox(height: 20),
                       Row(
                         children: [
                           Text(controller.position.value,
@@ -104,6 +105,7 @@ class Player extends StatelessWidget {
                                   fontSize: 16, color: Colors.white)),
                         ],
                       ),
+
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -111,8 +113,14 @@ class Player extends StatelessWidget {
                           IconButton(
                               onPressed: () {
                                 // Je passe à la musique précédente dans la liste
-                                controller.playMusic(
-                                    musicList, controller.playIndex.value - 1);
+                                try {
+                                  controller.playMusic(
+                                      listSongs[controller.playIndex.value - 1].uri,
+                                      controller.playIndex.value - 1);
+                                } catch (e) {
+                                  print("INFO : list index out of range");
+                                }
+                                // controller.playMusic(songs[controller.playIndex.value - 1].uri, controller.playIndex.value - 1);
                               },
                               icon: const Icon(
                                 Icons.skip_previous,
@@ -140,11 +148,13 @@ class Player extends StatelessWidget {
                           // IconButton(onPressed: (){}, icon: Icon(Icons.play_arrow, color: Colors.white, size: 36,)),
                           IconButton(
                               onPressed: () {
-                                print("Test");
-                                print(musicList[controller.playIndex.value]);
-
-                                controller.playMusic(
-                                    musicList, controller.playIndex.value + 1);
+                                try {
+                                  controller.playMusic(
+                                      listSongs[controller.playIndex.value + 1].uri,
+                                      controller.playIndex.value + 1);
+                                } catch (e) {
+                                  print("INFO : list index out of range");
+                                }
                               },
                               icon: const Icon(
                                 Icons.skip_next,
