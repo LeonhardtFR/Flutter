@@ -1,6 +1,8 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PlayerController extends GetxController {
@@ -15,6 +17,7 @@ class PlayerController extends GetxController {
 
   var maxDuration = 0.0.obs;
   var value = 0.0.obs;
+
 
   @override
   void onInit() {
@@ -38,11 +41,19 @@ class PlayerController extends GetxController {
     audioPlayer.seek(duration);
   }
 
-  playMusic(String? songs, index) {
+
+  playMusic(SongModel songs, index) {
     playIndex.value = index;
-    Uri uriSong = Uri.parse(songs!);
+    Uri uriSong = Uri.parse(songs.uri.toString());
+    print('Test : ' + songs.id.toString());
     try {
-      audioPlayer.setAudioSource(AudioSource.uri(uriSong));
+      audioPlayer.setAudioSource(
+          AudioSource.uri(
+              uriSong,
+            tag: MediaItem(id: songs.id.toString(), title: songs.title, album: songs.album, artist: songs.artist
+              )
+          )
+      );
       audioPlayer.play();
       isPlaying(true);
       updatePosition();

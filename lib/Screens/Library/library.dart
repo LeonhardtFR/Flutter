@@ -55,13 +55,14 @@ class _LibraryPageState extends State<LibraryPage>
 
   List<PlaylistModel> playlistDetails = [];
 
-  final Map<String, List<SongModel>> _albums = {};
-  final Map<String, List<SongModel>> _artists = {};
-  final Map<String, List<SongModel>> _genres = {};
+  String _albums = "";
+  final Map<String, List<SongModel>> _albumsList = {};
+  final Map<String, List<SongModel>> _artistsList = {};
+  final Map<String, List<SongModel>> _genresList = {};
 
-  final List<String> _sortedAlbumKeysList = [];
-  final List<String> _sortedArtistKeysList = [];
-  final List<String> _sortedGenreKeysList = [];
+  final List<String> _sortedAlbumList = [];
+  final List<String> _sortedArtistList = [];
+  final List<String> _sortedGenreList = [];
 
   @override
   void initState() {
@@ -153,9 +154,7 @@ class _LibraryPageState extends State<LibraryPage>
                     controller: _tabController,
                     children: [
                       MusicTab(listSongs: listSongs, tempPath: tempPath!),
-                      const Center(
-                          child: Text('Albums',
-                              style: TextStyle(color: Colors.white))),
+                      AlbumsTab(tempPath: tempPath!, albums: _albumsList, albumsList: _sortedAlbumList),
                       const Center(
                           child: Text('Artists',
                               style: TextStyle(color: Colors.white))),
@@ -218,7 +217,7 @@ class _MusicTabState extends State<MusicTab>
             ),
             onTap: () {
               // print(widget.songs[index].uri);
-              controller.playMusic(widget.listSongs[index].uri, index);
+              controller.playMusic(widget.listSongs[index], index);
               Get.to(() =>
                   Player(
                     listSongs: widget.listSongs,
@@ -232,16 +231,64 @@ class _MusicTabState extends State<MusicTab>
   }
 }
 
-class albumTab extends StatefulWidget {
-  const albumTab({Key? key}) : super(key: key);
+class AlbumsTab extends StatefulWidget {
+  final String tempPath;
+  final Map<String, List<SongModel>> albums;
+  final List<String> albumsList;
+
+  const AlbumsTab({
+    super.key,
+    required this.tempPath, required this.albums, required this.albumsList,
+  });
 
   @override
-  State<albumTab> createState() => _albumTabState();
+  State<AlbumsTab> createState() => _AlbumsTabState();
 }
 
-class _albumTabState extends State<albumTab> {
+class _AlbumsTabState extends State<AlbumsTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    super.build(context);
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(top: 20, bottom: 10),
+      shrinkWrap: true,
+      itemExtent: 70.0,
+      itemCount: widget.albumsList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: OfflineAudioQuery.offlineArtworkWidget(
+            id: widget.albums[widget.albumsList[index]]![0].id,
+            type: ArtworkType.AUDIO,
+            tempPath: widget.tempPath,
+            fileName:
+            widget.albums[widget.albumsList[index]]![0].displayNameWOExt,
+          ),
+          title: Text(
+            widget.albumsList[index],
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            '${widget.albums[widget.albumsList[index]]!.length} songs',
+          ),
+          onTap: () {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => DownloadedSongs(
+            //       title: widget.albumsList[index],
+            //       cachedSongs: widget.albums[widget.albumsList[index]],
+            //     ),
+            //   ),
+            // );
+          },
+        );
+      },
+    );
   }
 }
+

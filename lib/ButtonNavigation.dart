@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:osbrosound/Screens/Radio/radio.dart';
 import 'Screens/Library/library.dart';
 import 'Screens/Settings/Settings.dart';
 import 'Screens/Youtube/YoutubeHome.dart';
@@ -16,7 +17,8 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
   final List _pages = [
     const LibraryPage(),
     const YoutubeHomeScreen(),
-    const SettingsScreen()
+    const radioScreen(),
+    const SettingsScreen(),
   ];
 
   changeScreen(int index) {
@@ -36,6 +38,8 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
           BottomNavigationBarItem(
               icon: Icon(Icons.youtube_searched_for), label: 'Youtube'),
           BottomNavigationBarItem(
+              icon: Icon(Icons.settings_input_antenna), label: 'Radio'),
+          BottomNavigationBarItem(
               icon: Icon(Icons.settings), label: 'Settings'),
         ],
         currentIndex: selectedIndex,
@@ -45,6 +49,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
         showUnselectedLabels: true,
         backgroundColor: Colors.black,
         onTap: (int index) => changeScreen(index),
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

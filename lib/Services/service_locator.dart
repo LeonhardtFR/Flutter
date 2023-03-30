@@ -6,7 +6,7 @@ Future<void> setupServiceLocator() async {
   // services
   // centralisation de la configuration des dépendances,
   // ce qui rend le code plus facile à maintenir et à tester.
-  Get.putAsync<AudioHandler>(() => initAudioService());
+  // Get.putAsync<AudioHandler>(() => initAudioService());
   // Get.lazyPut<PlaylistRepository>(() => DemoPlaylist());
 
   // page state

@@ -115,7 +115,7 @@ class Player extends StatelessWidget {
                                 // Je passe à la musique précédente dans la liste
                                 try {
                                   controller.playMusic(
-                                      listSongs[controller.playIndex.value - 1].uri,
+                                      listSongs[controller.playIndex.value - 1],
                                       controller.playIndex.value - 1);
                                 } catch (e) {
                                   print("INFO : list index out of range");
@@ -150,7 +150,7 @@ class Player extends StatelessWidget {
                               onPressed: () {
                                 try {
                                   controller.playMusic(
-                                      listSongs[controller.playIndex.value + 1].uri,
+                                      listSongs[controller.playIndex.value + 1],
                                       controller.playIndex.value + 1);
                                 } catch (e) {
                                   print("INFO : list index out of range");
