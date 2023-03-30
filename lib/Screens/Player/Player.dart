@@ -2,9 +2,12 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:marquee/marquee.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
+import 'package:osbrosound/Screens/Player/MiniPlayer.dart';
+
 
 class Player extends StatelessWidget {
   final List<SongModel> listSongs;
@@ -16,14 +19,18 @@ class Player extends StatelessWidget {
 
   late AudioHandler _audioHandler;
 
-  var item = MediaItem(
-    id: 'https://example.com/audio.mp3',
-    album: 'Album name',
-    title: 'Track title',
-    artist: 'Artist name',
-    duration: const Duration(milliseconds: 123456),
-    artUri: Uri.parse('https://example.com/album.jpg'),
-  );
+  late AnimationController _animationController;
+  late Animation<double> _textAnimation;
+
+
+  // var item = MediaItem(
+  //   id: 'https://example.com/audio.mp3',
+  //   album: 'Album name',
+  //   title: 'Track title',
+  //   artist: 'Artist name',
+  //   duration: const Duration(milliseconds: 123456),
+  //   artUri: Uri.parse('https://example.com/album.jpg'),
+  // );
 
 
 
@@ -56,6 +63,7 @@ class Player extends StatelessWidget {
             const SizedBox(height: 16),
             Expanded(
               child: Container(
+                key: const Key('player'),
                 padding: const EdgeInsets.all(8),
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
@@ -65,14 +73,30 @@ class Player extends StatelessWidget {
                 child: Obx(
                   () => Column(
                     children: [
-                      Text(
-                          listSongs[controller.playIndex.value]
-                              .displayNameWOExt,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white)),
+                      // Text(
+                      //     listSongs[controller.playIndex.value]
+                      //         .displayNameWOExt,
+                      //     textAlign: TextAlign.center,
+                      //     style: const TextStyle(
+                      //         fontSize: 24,
+                      //         fontWeight: FontWeight.bold,
+                      //         color: Colors.white)),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 30),
+                        height: 30,
+                      child: Marquee(
+                        text: listSongs[controller.playIndex.value].title,
+                        style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                        scrollAxis: Axis.horizontal,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        blankSpace: 50.0,
+                        velocity: 15.0,
+                        pauseAfterRound: const Duration(seconds: 3),
+                          ),
+                      ),
                       const SizedBox(height: 16),
                       Text(
                           listSongs[controller.playIndex.value]
@@ -168,9 +192,17 @@ class Player extends StatelessWidget {
                 ),
               ),
             ),
+            MiniPlayer().mini(context, tempPath, listSongs),
           ],
         ),
       ),
+        // bottomNavigationBar: Container(
+        //   height: 100,
+        //   color: Colors.black,
+        //   child: MiniPlayer().mini(context, tempPath, listSongs),
+        // )
+
+        // bottomNavigationBar: Text("test", style: TextStyle(color: Colors.white),),
     );
   }
 }
