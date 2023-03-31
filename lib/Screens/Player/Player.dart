@@ -6,12 +6,13 @@ import 'package:marquee/marquee.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
+import 'package:osbrosound/Screens/Library/library.dart';
 import 'package:osbrosound/Screens/Player/MiniPlayer.dart';
-
 
 class Player extends StatelessWidget {
   final List<SongModel> listSongs;
-  Player({Key? key, required this.tempPath, required this.listSongs}) : super(key: key);
+  Player({Key? key, required this.tempPath, required this.listSongs})
+      : super(key: key);
 
   // final List musicList;
   var controller = Get.find<PlayerController>();
@@ -22,7 +23,6 @@ class Player extends StatelessWidget {
   late AnimationController _animationController;
   late Animation<double> _textAnimation;
 
-
   // var item = MediaItem(
   //   id: 'https://example.com/audio.mp3',
   //   album: 'Album name',
@@ -32,16 +32,16 @@ class Player extends StatelessWidget {
   //   artUri: Uri.parse('https://example.com/album.jpg'),
   // );
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(backgroundColor: Colors.transparent),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: GestureDetector(
+        onDoubleTap: () {
+          print("TEST");
+          Get.to(() => LibraryPage());
+        },
         child: Column(
           children: [
             Expanded(
@@ -52,7 +52,8 @@ class Player extends StatelessWidget {
                 child: OfflineAudioQuery.offlineArtworkWidget(
                   id: listSongs[controller.playIndex.value].id,
                   type: ArtworkType.AUDIO,
-                  fileName: listSongs[controller.playIndex.value].displayNameWOExt,
+                  fileName:
+                      listSongs[controller.playIndex.value].displayNameWOExt,
                   tempPath: tempPath,
                   quality: 1000,
                   width: 300,
@@ -84,18 +85,18 @@ class Player extends StatelessWidget {
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 30),
                         height: 30,
-                      child: Marquee(
-                        text: listSongs[controller.playIndex.value].title,
-                        style: const TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                        scrollAxis: Axis.horizontal,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        blankSpace: 50.0,
-                        velocity: 15.0,
-                        pauseAfterRound: const Duration(seconds: 3),
-                          ),
+                        child: Marquee(
+                          text: listSongs[controller.playIndex.value].title,
+                          style: const TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                          scrollAxis: Axis.horizontal,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          blankSpace: 50.0,
+                          velocity: 15.0,
+                          pauseAfterRound: const Duration(seconds: 3),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -104,7 +105,7 @@ class Player extends StatelessWidget {
                               .toString(),
                           style: const TextStyle(
                               fontSize: 16, color: Colors.white)),
-                      // const SizedBox(height: 20),
+                      const SizedBox(height: 75),
                       Row(
                         children: [
                           Text(controller.position.value,
@@ -192,17 +193,16 @@ class Player extends StatelessWidget {
                 ),
               ),
             ),
-            MiniPlayer().mini(context, tempPath, listSongs),
           ],
         ),
       ),
-        // bottomNavigationBar: Container(
-        //   height: 100,
-        //   color: Colors.black,
-        //   child: MiniPlayer().mini(context, tempPath, listSongs),
-        // )
+      // bottomNavigationBar: Container(
+      //   height: 100,
+      //   color: Colors.black,
+      //   child: MiniPlayer().mini(context, tempPath, listSongs),
+      // )
 
-        // bottomNavigationBar: Text("test", style: TextStyle(color: Colors.white),),
+      // bottomNavigationBar: Text("test", style: TextStyle(color: Colors.white),),
     );
   }
 }

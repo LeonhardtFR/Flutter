@@ -18,6 +18,7 @@ class PlayerController extends GetxController {
   var maxDuration = 0.0.obs;
   var value = 0.0.obs;
 
+  var miniPlayer = false.obs;
 
   @override
   void onInit() {
@@ -41,19 +42,17 @@ class PlayerController extends GetxController {
     audioPlayer.seek(duration);
   }
 
-
   playMusic(SongModel songs, index) {
     playIndex.value = index;
     Uri uriSong = Uri.parse(songs.uri.toString());
     print('Test : ' + songs.id.toString());
     try {
-      audioPlayer.setAudioSource(
-          AudioSource.uri(
-              uriSong,
-            tag: MediaItem(id: songs.id.toString(), title: songs.title, album: songs.album, artist: songs.artist
-              )
-          )
-      );
+      audioPlayer.setAudioSource(AudioSource.uri(uriSong,
+          tag: MediaItem(
+              id: songs.id.toString(),
+              title: songs.title,
+              album: songs.album,
+              artist: songs.artist)));
       audioPlayer.play();
       isPlaying(true);
       updatePosition();

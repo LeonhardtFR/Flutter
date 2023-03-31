@@ -13,8 +13,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:logging/logging.dart';
 
-late AudioHandler _audioHandler;
+import '../Player/MiniPlayer.dart';
 
+late AudioHandler _audioHandler;
 
 // Future<void> audioHandler() async {
 //   _audioHandler = await AudioService.init(
@@ -105,68 +106,82 @@ class _LibraryPageState extends State<LibraryPage>
   // WIDGET BUILD METHOD \\
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-      children: [
-        Expanded(
-            child: DefaultTabController(
-          length: 4,
-          child: Scaffold(
-            backgroundColor: Colors.black,
-            appBar: AppBar(
-              title: const Text('Library'),
+    var controller = Get.put(PlayerController());
+    print("TEST");
+    print(controller.miniPlayer.value);
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+              child: DefaultTabController(
+            length: 4,
+            child: Scaffold(
               backgroundColor: Colors.black,
-              bottom: TabBar(
-                unselectedLabelColor: Colors.grey,
-                labelColor: Colors.white,
-                indicatorColor: Colors.blueAccent,
-                indicatorSize: TabBarIndicatorSize.label,
-                controller: _tabController,
-                onTap: (int index) {
-                  setState(() {
-                    _tabController!.index = index;
-                  });
-                },
-                tabs: const [
-                  Tab(text: 'Songs'),
-                  Tab(text: 'Albums'),
-                  Tab(text: 'Artists'),
-                  Tab(text: 'Genres'),
+              appBar: AppBar(
+                title: const Text('Library'),
+                backgroundColor: Colors.black,
+                bottom: TabBar(
+                  unselectedLabelColor: Colors.grey,
+                  labelColor: Colors.white,
+                  indicatorColor: Colors.blueAccent,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  controller: _tabController,
+                  onTap: (int index) {
+                    setState(() {
+                      _tabController!.index = index;
+                    });
+                  },
+                  tabs: const [
+                    Tab(text: 'Songs'),
+                    Tab(text: 'Albums'),
+                    Tab(text: 'Artists'),
+                    Tab(text: 'Genres'),
+                  ],
+                ),
+
+                // Icone de recherche dans l'AppBar
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      // showSearch(context: context, delegate: delegate)
+                    },
+                    icon: const Icon(Icons.search),
+                  ),
                 ],
               ),
-
-              // Icone de recherche dans l'AppBar
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    // showSearch(context: context, delegate: delegate)
-                  },
-                  icon: const Icon(Icons.search),
-                ),
-              ],
+              body: !musicExist
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                      // child: Text('No music found in the storage', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
+                    )
+                  : TabBarView(
+                      controller: _tabController,
+                      children: [
+                        MusicTab(listSongs: listSongs, tempPath: tempPath!),
+                        AlbumsTab(
+                            tempPath: tempPath!,
+                            albums: _albumsList,
+                            albumsList: _sortedAlbumList),
+                        const Center(
+                            child: Text('Artists',
+                                style: TextStyle(color: Colors.white))),
+                        const Center(
+                            child: Text('Genres',
+                                style: TextStyle(color: Colors.white)))
+                      ],
+                    ),
             ),
-            body: !musicExist
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                    // child: Text('No music found in the storage', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
-                  )
-                : TabBarView(
-                    controller: _tabController,
-                    children: [
-                      MusicTab(listSongs: listSongs, tempPath: tempPath!),
-                      AlbumsTab(tempPath: tempPath!, albums: _albumsList, albumsList: _sortedAlbumList),
-                      const Center(
-                          child: Text('Artists',
-                              style: TextStyle(color: Colors.white))),
-                      const Center(
-                          child: Text('Genres',
-                              style: TextStyle(color: Colors.white)))
-                    ],
-                  ),
+          )),
+          Obx(
+            () => Container(
+              child: controller.miniPlayer.value
+                  ? MiniPlayer().mini(context, tempPath!, listSongs)
+                  : const SizedBox(),
+            ),
           ),
-        ))
-      ],
-    ));
+        ],
+      ),
+    );
   }
 }
 
@@ -218,8 +233,8 @@ class _MusicTabState extends State<MusicTab>
             onTap: () {
               // print(widget.songs[index].uri);
               controller.playMusic(widget.listSongs[index], index);
-              Get.to(() =>
-                  Player(
+              controller.miniPlayer(true);
+              Get.to(() => Player(
                     listSongs: widget.listSongs,
                     tempPath: widget.tempPath,
                   ));
@@ -238,7 +253,9 @@ class AlbumsTab extends StatefulWidget {
 
   const AlbumsTab({
     super.key,
-    required this.tempPath, required this.albums, required this.albumsList,
+    required this.tempPath,
+    required this.albums,
+    required this.albumsList,
   });
 
   @override
@@ -266,7 +283,7 @@ class _AlbumsTabState extends State<AlbumsTab>
             type: ArtworkType.AUDIO,
             tempPath: widget.tempPath,
             fileName:
-            widget.albums[widget.albumsList[index]]![0].displayNameWOExt,
+                widget.albums[widget.albumsList[index]]![0].displayNameWOExt,
           ),
           title: Text(
             widget.albumsList[index],
@@ -291,4 +308,3 @@ class _AlbumsTabState extends State<AlbumsTab>
     );
   }
 }
-
