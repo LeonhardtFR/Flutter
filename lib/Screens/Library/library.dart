@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -12,6 +13,7 @@ import 'package:osbrosound/Services/player_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:logging/logging.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import '../Player/MiniPlayer.dart';
 
@@ -41,6 +43,7 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
+
   List<SongModel> listSongs = [];
 
   String? tempPath = '/storage/emulated/0/Music';
@@ -67,11 +70,12 @@ class _LibraryPageState extends State<LibraryPage>
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     // audioHandler();
     _tabController = TabController(length: 4, vsync: this);
     getMusic();
-    // requestPermission();
-    super.initState();
+    });
   }
 
   @override
@@ -107,8 +111,6 @@ class _LibraryPageState extends State<LibraryPage>
   @override
   Widget build(BuildContext context) {
     var controller = Get.put(PlayerController());
-    print("TEST");
-    print(controller.miniPlayer.value);
     return Scaffold(
       body: Column(
         children: [
@@ -172,13 +174,33 @@ class _LibraryPageState extends State<LibraryPage>
                     ),
             ),
           )),
-          Obx(
-            () => Container(
-              child: controller.miniPlayer.value
-                  ? MiniPlayer().mini(context, tempPath!, listSongs)
-                  : const SizedBox(),
-            ),
-          ),
+
+          // On gére une erreur qui se produit quand il n'a pas le temps de récup la liste, on veut etre sur qu'il ai le temps
+          // if (listSongs.isNotEmpty && !controller.player.value)
+          // Obx(() {
+          //   if (listSongs.isNotEmpty && !controller.player.value) {
+          //     print("player value: ");
+          //   print(controller.player.value);
+          //   return Container(
+          //       child: MiniPlayer().mini(context, tempPath!, listSongs));
+          // } else {
+          //   return const SizedBox();
+          // }
+          // }
+    // ),
+          // ),
+
+          if (listSongs.isNotEmpty)
+            Obx(() =>
+                Container(
+                  color: Colors.black,
+                  child: AnimatedSize(
+                      duration: const Duration(milliseconds: 500),
+                      child: controller.miniPlayer.value
+                          ? MiniPlayer().mini(context, tempPath!, listSongs)
+                          :  Container(color: Colors.black)),
+                )),
+
         ],
       ),
     );
@@ -233,11 +255,20 @@ class _MusicTabState extends State<MusicTab>
             onTap: () {
               // print(widget.songs[index].uri);
               controller.playMusic(widget.listSongs[index], index);
-              controller.miniPlayer(true);
-              Get.to(() => Player(
-                    listSongs: widget.listSongs,
-                    tempPath: widget.tempPath,
-                  ));
+
+              PersistentNavBarNavigator.pushNewScreen(
+                context,
+                screen: Player(tempPath: widget.tempPath, listSongs: widget.listSongs,),
+                withNavBar: true,
+                pageTransitionAnimation: PageTransitionAnimation.fade,
+              );
+              controller.miniPlayer(false);
+              controller.player(true);
+
+              // Get.to(() => Player(
+              //       listSongs: widget.listSongs,
+              //       tempPath: widget.tempPath,
+              //     ));
             },
           ),
         );

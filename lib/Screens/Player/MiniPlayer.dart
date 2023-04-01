@@ -2,20 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:marquee/marquee.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
+import 'package:osbrosound/Screens/Player/Player.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class MiniPlayer {
   mini(BuildContext context, String tempPath, List<SongModel> listSongs) {
     var controller = Get.find<PlayerController>();
-    controller.miniPlayer(true);
+    // controller.miniPlayer(true);
     return Container(
       key: const Key('miniPlayer'),
-      padding: const EdgeInsets.all(12.0),
-      color: Colors.black,
+      padding: const EdgeInsets.only(bottom: 25.0, top: 0, left: 12.5, right: 12.5),
+      color: Colors.transparent,
       child: Column(children: [
         // if (controller.miniPlayer.value)
-        Row(
+        GestureDetector(
+          onTap: () {
+            PersistentNavBarNavigator.pushNewScreen(
+              context,
+              screen: Player(tempPath: tempPath, listSongs: listSongs,),
+              withNavBar: true,
+              pageTransitionAnimation: PageTransitionAnimation.sizeUp,
+            );
+            controller.miniPlayer(false);
+          },
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
@@ -32,11 +45,15 @@ class MiniPlayer {
                     controller.isPlaying(true);
                   }
                 }),
-            Text(
-              listSongs[controller.playIndex.value].title,
+            Expanded(
+                child: Container(
+                  height: 25,
+              child: Marquee(
+                blankSpace: 35,
+              velocity: 25,
               style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+                  color: Colors.white, fontWeight: FontWeight.bold), text: listSongs[controller.playIndex.value].title,
+            ))),
             const SizedBox(width: 8.0),
             Text(
               "[" +
@@ -59,6 +76,7 @@ class MiniPlayer {
               },
             ),
           ],
+        ),
         ),
         // if (controller.miniPlayer.value)
         Row(

@@ -18,7 +18,10 @@ class PlayerController extends GetxController {
   var maxDuration = 0.0.obs;
   var value = 0.0.obs;
 
+  var player = false.obs;
   var miniPlayer = false.obs;
+
+  var showMiniPlayer = false.obs;
 
   @override
   void onInit() {

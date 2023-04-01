@@ -29,25 +29,25 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
     return [
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.library_music),
-        title: ("Library"),
+        // title: ("Library"),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.youtube_searched_for),
-        title: ("Youtube"),
+        // title: ("Youtube"),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.settings_input_antenna),
-        title: ("Radio"),
+        // title: ("Radio"),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.settings),
-        title: ("Settings"),
+        // title: ("Settings"),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
@@ -69,7 +69,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
     });
   }
 
-  @override
+  // @override
   Widget build(BuildContext context) {
     return Center(
       child: PersistentTabView(
@@ -78,15 +78,17 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
         screens: _NavScreens(),
         items: _navBarsItems(),
         confineInSafeArea: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFF131313),
         handleAndroidBackButtonPress: true,
         resizeToAvoidBottomInset: true,
         hideNavigationBarWhenKeyboardShows: true,
         decoration: NavBarDecoration(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(15.0),
         ),
         popAllScreensOnTapOfSelectedTab: true,
-        navBarStyle: NavBarStyle.style3,
+        navBarStyle: NavBarStyle.style6,
+        navBarHeight: 39,
+        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4.0),
       ),
     );
   }

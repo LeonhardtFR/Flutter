@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:osbrosound/ButtonNavigation.dart';
@@ -43,10 +44,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const GetMaterialApp(
+    return GetMaterialApp(
       title: 'OsbroSound',
       debugShowCheckedModeBanner: false,
-      home: ButtonNavigation(),
+      navigatorObservers: [GetObserver()],
+      home: const ButtonNavigation(),
     );
   }
 }
