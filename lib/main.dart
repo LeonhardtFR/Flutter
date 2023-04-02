@@ -12,6 +12,7 @@ import 'package:osbrosound/Services/service_locator.dart';
 // }
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'OsbroSound',
