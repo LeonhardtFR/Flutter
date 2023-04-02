@@ -14,7 +14,7 @@ class MiniPlayer {
     // controller.miniPlayer(true);
     return Container(
       key: const Key('miniPlayer'),
-      padding: const EdgeInsets.only(bottom: 25.0, top: 0, left: 12.5, right: 12.5),
+      padding: const EdgeInsets.only(bottom: 30.0, top: 0, left: 12.5, right: 12.5),
       color: Colors.transparent,
       child: Column(children: [
         // if (controller.miniPlayer.value)

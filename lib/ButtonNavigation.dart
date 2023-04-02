@@ -88,7 +88,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
         popAllScreensOnTapOfSelectedTab: true,
         navBarStyle: NavBarStyle.style6,
         navBarHeight: 39,
-        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4.0),
+        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       ),
     );
   }

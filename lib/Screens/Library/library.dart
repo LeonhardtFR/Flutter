@@ -728,7 +728,7 @@ class _GenresTabTabState extends State<GenresTab>
         },
       );
     }
-    // Quand l'utilisateur clique sur un artiste
+    // Quand l'utilisateur clique sur un genre
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -747,11 +747,11 @@ class _GenresTabTabState extends State<GenresTab>
             child: const Text("Show all genres"),
           ),
         ),
-        // Liste des chansons de l'artiste que l'utilisateur a sélectionné
+        // Liste des chansons de genre musicaux que l'utilisateur a sélectionné
         Expanded(
           child: ListView.builder(
             itemCount: widget.genres[widget.genresList[libraryController
-                .artistListIndex.value]]!.length,
+                .genreListIndex.value]]!.length,
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
               return Container(
@@ -759,25 +759,25 @@ class _GenresTabTabState extends State<GenresTab>
                 child: ListTile(
                   leading: OfflineAudioQuery.offlineArtworkWidget(
                     id: widget.genres[widget.genresList[libraryController
-                        .artistListIndex.value]]![index].id,
+                        .genreListIndex.value]]![index].id,
                     type: ArtworkType.AUDIO,
                     tempPath: widget.tempPath,
                     fileName: widget.genres[widget.genresList[libraryController
-                        .artistListIndex.value]]![index].displayNameWOExt,
+                        .genreListIndex.value]]![index].displayNameWOExt,
                   ),
                   title: Text(
                     widget.genres[widget.genresList[libraryController
-                        .artistListIndex.value]]![index].title.trim() != ''
+                        .genreListIndex.value]]![index].title.trim() != ''
                         ? widget.genres[widget.genresList[libraryController
-                        .artistListIndex.value]]![index].title
+                        .genreListIndex.value]]![index].title
                         : widget.genres[widget.genresList[libraryController
-                        .artistListIndex.value]]![index].displayNameWOExt,
+                        .genreListIndex.value]]![index].displayNameWOExt,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: Colors.white),
                   ),
                   subtitle: Text(
                     widget.genres[widget.genresList[libraryController
-                        .artistListIndex.value]]![index].artist!,
+                        .genreListIndex.value]]![index].genre!,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: Colors.white),
                   ),
@@ -785,13 +785,13 @@ class _GenresTabTabState extends State<GenresTab>
                     // print(widget.songs[index].uri);
                     controller.playMusic(
                         widget.genres[widget.genresList[libraryController
-                            .artistListIndex.value]]![index], index);
+                            .genreListIndex.value]]![index], index);
 
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
                       screen: Player(tempPath: widget.tempPath,
                         listSongs: widget.genres[widget.genresList[libraryController
-                            .artistListIndex.value]]!,),
+                            .genreListIndex.value]]!,),
                       withNavBar: true,
                       pageTransitionAnimation: PageTransitionAnimation.fade,
                     );
