@@ -1,162 +1,151 @@
 import 'dart:async';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class radioScreen extends StatefulWidget {
-  const radioScreen({Key? key}) : super(key: key);
+import '../../Controllers/playerController.dart';
+
+class RadioScreen extends StatefulWidget {
+  const RadioScreen({Key? key}) : super(key: key);
 
   @override
-  State<radioScreen> createState() => _radioScreenState();
+  State<RadioScreen> createState() => _RadioScreenState();
 }
 
-class _radioScreenState extends State<radioScreen> {
-  final TextEditingController controllerUrl = TextEditingController(text: 'https://api.radioking.io/widget/radio/bankable-radio/track/current');
+class _RadioScreenState extends State<RadioScreen> {
+  final TextEditingController controllerUrl = TextEditingController(
+      text:
+          'https://api.radioking.io/widget/radio/bankable-radio/track/current');
   static const url = 'https://listen.radioking.com/radio/242578/stream/286663';
 
-  late AudioPlayer radioPlayer;
+  PlayerController radioPlayer = Get.find<PlayerController>();
   bool _isPlaying = false;
 
-  StreamController<Map<String, dynamic>> _metadataController = StreamController<Map<String, dynamic>>.broadcast();
+  StreamController<Map<String, dynamic>> _metadataController =
+      StreamController<Map<String, dynamic>>.broadcast();
+
+  Map<String, dynamic> _previousMetadata = {'title': '', 'artist': ''};
 
   @override
   void initState() {
     super.initState();
-    _initAudioPlayer();
-    getCurrentTrackMetadata();
   }
 
   void _startMetadataUpdates() {
     Timer.periodic(const Duration(seconds: 10), (timer) async {
       try {
         final newMetadata = await getCurrentTrackMetadata();
-        _metadataController.add(newMetadata);
+
+        if (_previousMetadata['title'] != newMetadata['title']) {
+          _previousMetadata = newMetadata;
+          _metadataController.add(newMetadata);
+          showSnackbar(newMetadata);
+        }
       } catch (e) {
         print("Erreur lors de la récupération des métadonnées : $e");
       }
     });
   }
 
+  Future<Map<String, dynamic>> getCurrentTrackMetadata() async {
+    final response = await http.get(Uri.parse(
+        'https://api.radioking.io/widget/radio/bankable-radio/track/current'));
 
-  // Recuperation des données de la radio (titres, artistes, etc)
-  Future getCurrentTrackMetadata() async {
-    final response = await http.get(Uri.parse('https://api.radioking.io/widget/radio/bankable-radio/track/current'));
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-
-      try {
-        final metadata = await jsonResponse;
-        final trackTitle = metadata['title'];
-        final trackArtist = metadata['artist'];
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Titre: $trackTitle - Artiste: $trackArtist'),
-          ),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur lors de la récupération des métadonnées'),
-          ),
-        );
-      }
+      final metadata = {
+        'title': jsonResponse['title'],
+        'artist': jsonResponse['artist'],
+      };
+      return metadata;
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur lors de la récupération des métadonnées'),
-        ),
-      );
+      throw Exception('Erreur lors de la récupération des métadonnées');
     }
   }
 
-
-
-
-
   _initAudioPlayer() {
-    radioPlayer = AudioPlayer();
-    radioPlayer.setUrl(url);
+    radioPlayer.audioPlayer.setUrl(url);
+    final mediaItem = MediaItem(id: url, title: "Radio Stream");
+    radioPlayer.audioPlayer
+        .setAudioSource(AudioSource.uri(Uri.parse(url), tag: mediaItem));
+  }
 
-    final mediaItem = MediaItem(
-            id: url,
-            title: "Radio Stream",
+  void showSnackbar(Map<String, dynamic> metadata) {
+    final trackTitle = metadata['title'];
+    final trackArtist = metadata['artist'];
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Titre: $trackTitle - Artiste: $trackArtist'),
+      ),
     );
+  }
 
-    radioPlayer.setAudioSource(AudioSource.uri(Uri.parse(url),
-        tag: mediaItem));
-
-    _startMetadataUpdates();
+  @override
+  void dispose() {
+    _metadataController.close();
+    // radioPlayer.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Expanded(
-            child: Scaffold(
-              backgroundColor: Colors.black,
-              appBar: AppBar(
-                title: const Text('Radio'),
-                backgroundColor: Colors.black,
-              ),
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: TextField(
-                        controller: controllerUrl,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter a radio api',
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                          ),
-                          border: OutlineInputBorder(),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text('Radio'),
+        backgroundColor: Colors.black,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: controllerUrl,
+                decoration: const InputDecoration(
+                  hintText: 'Enter a radio api',
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                  ),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey,
                     ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      child: const Text('Lire'),
-                      onPressed: () {
-                        setState(() {
-                          _isPlaying = !_isPlaying;
-                        });
-
-                        if (_isPlaying) {
-                          radioPlayer.play();
-                        } else {
-                          radioPlayer.pause();
-                        }
-                      },
-                    ),
-                  ],
+                  ),
+                ),
+                style: const TextStyle(
+                  color: Colors.white,
                 ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            ElevatedButton(
+              child: const Text('Lire'),
+              onPressed: () {
+                setState(() {
+                  _isPlaying = !_isPlaying;
+                });
+
+                _initAudioPlayer();
+                if (_isPlaying) {
+                  _initAudioPlayer();
+                  _startMetadataUpdates();
+                  radioPlayer.audioPlayer.play();
+                } else {
+                  radioPlayer.audioPlayer.pause();
+                }
+                print(_isPlaying);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
-
-
-
-

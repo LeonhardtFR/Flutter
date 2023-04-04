@@ -6,6 +6,8 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:osbrosound/ButtonNavigation.dart';
 import 'package:osbrosound/Services/service_locator.dart';
 
+import 'Controllers/playerController.dart';
+
 // void main() async {
 //   await setupServiceLocator();
 //   runApp(const MyApp());
@@ -18,6 +20,7 @@ Future<void> main() async {
     androidNotificationChannelName: 'OsbroSound',
     androidNotificationOngoing: true,
   );
+  var libraryController = Get.put(PlayerController());
   runApp(MyApp());
 }
 
@@ -41,7 +44,6 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {

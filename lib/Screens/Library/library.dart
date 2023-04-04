@@ -16,29 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:logging/logging.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
-
 import '../Player/MiniPlayer.dart';
-
-late AudioHandler _audioHandler;
-
-// Appbar controller
-// TabController? tabController;
-// var libraryController = Get.put(LibraryController());
-
-// Future<void> audioHandler() async {
-//   _audioHandler = await AudioService.init(
-//     builder: () => BackgroundAudio(),
-//     config: const AudioServiceConfig(
-//       androidNotificationChannelId: 'com.osbro.osbrosound',
-//       androidNotificationChannelName: 'OsbroSound',
-//       androidNotificationIcon: 'mipmap/ic_launcher',
-//       androidStopForegroundOnPause: true,
-//       androidResumeOnClick: true,
-//       androidShowNotificationBadge: true,
-//       androidNotificationOngoing: true,
-//     ),
-//   );
-// }
 
 class LibraryPage extends StatefulWidget {
   final String? title;
@@ -51,7 +29,6 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
-
   List<SongModel> listSongs = [];
 
   String? tempPath = '/storage/emulated/0/Music';
@@ -81,16 +58,18 @@ class _LibraryPageState extends State<LibraryPage>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var libraryController = Get.put(LibraryController());
-    // audioHandler();
+      // audioHandler();
       print("ALED");
       print(libraryController.tabIndex.value);
-      tabController = TabController(length: 4, vsync: this, initialIndex: libraryController.tabIndex.value);
-    getMusic();
+      tabController = TabController(
+          length: 4,
+          vsync: this,
+          initialIndex: libraryController.tabIndex.value);
+      getMusic();
 
       // if(libraryController.albumTab.value) {
       //   tabController?.index = 1;
       // }
-
     });
   }
 
@@ -106,24 +85,28 @@ class _LibraryPageState extends State<LibraryPage>
 
   Future<void> getMusic() async {
     try {
-      await Permission.audio.request();
-      await Permission.storage.request();
-      await Permission.manageExternalStorage.request();
+      // await Permission.audio.request();
+      // await Permission.storage.request();
+      // await Permission.manageExternalStorage.request();
       await offlineAudioQuery.requestPermission();
+      // await Permission.storage.request();
 
       // if(widget.takeAlbum != null) {
       //   Logger.root.info("User take album from album page");
       //   listSongs = widget.takeAlbum!;
       // } else {
-        Logger.root.info("List all songs from library");
-        listSongs = List<SongModel>.from(await offlineAudioQuery.getSongs(
-            sortType: SongSortType.DISPLAY_NAME,
-            orderType: OrderType.ASC_OR_SMALLER));
+      Logger.root.info("List all songs from library");
+      listSongs = List<SongModel>.from(await offlineAudioQuery.getSongs(
+          sortType: SongSortType.DISPLAY_NAME,
+          orderType: OrderType.ASC_OR_SMALLER));
       // }
     } catch (e) {
       Logger.root.severe("Error while requesting permission: $e");
     }
 
+    // if (await Permission.storage.isGranted &&
+    //     await Permission.audio.isGranted) {
+    Logger.root.info("Permission granted");
     var music = await offlineAudioQuery.getSongs();
 
     if (music.isNotEmpty) {
@@ -135,12 +118,12 @@ class _LibraryPageState extends State<LibraryPage>
     getArtists(listSongs);
     getGenres(listSongs);
   }
-
+  // }
 
   Future<void> getAlbums(listSongs) async {
-    for(int i = 0; i < listSongs.length; i++) {
+    for (int i = 0; i < listSongs.length; i++) {
       try {
-        if(listAlbums.containsKey(listSongs[i].album ?? "Unknown")) {
+        if (listAlbums.containsKey(listSongs[i].album ?? "Unknown")) {
           listAlbums[listSongs[i].album ?? "Unknown"]!.add(listSongs[i]);
         } else {
           listAlbums[listSongs[i].album ?? "Unknown"] = [listSongs[i]];
@@ -153,9 +136,9 @@ class _LibraryPageState extends State<LibraryPage>
   }
 
   Future<void> getArtists(listSongs) async {
-    for(int i = 0; i < listSongs.length; i++) {
+    for (int i = 0; i < listSongs.length; i++) {
       try {
-        if(listArtists.containsKey(listSongs[i].artist ?? "Unknown")) {
+        if (listArtists.containsKey(listSongs[i].artist ?? "Unknown")) {
           listArtists[listSongs[i].artist ?? "Unknown"]!.add(listSongs[i]);
         } else {
           listArtists[listSongs[i].artist ?? "Unknown"] = [listSongs[i]];
@@ -168,9 +151,9 @@ class _LibraryPageState extends State<LibraryPage>
   }
 
   Future<void> getGenres(listSongs) async {
-    for(int i = 0; i < listSongs.length; i++) {
+    for (int i = 0; i < listSongs.length; i++) {
       try {
-        if(listGenres.containsKey(listSongs[i].genre ?? "Unknown")) {
+        if (listGenres.containsKey(listSongs[i].genre ?? "Unknown")) {
           listGenres[listSongs[i].genre ?? "Unknown"]!.add(listSongs[i]);
         } else {
           listGenres[listSongs[i].genre ?? "Unknown"] = [listSongs[i]];
@@ -205,13 +188,12 @@ class _LibraryPageState extends State<LibraryPage>
                   indicatorColor: Colors.blueAccent,
                   indicatorSize: TabBarIndicatorSize.label,
                   controller: tabController,
-    onTap: (int index) {
-      setState(() {
-        tabController!.index = index;
-        libraryController.tabIndex.value = index;
-      });
-    },
-
+                  onTap: (int index) {
+                    setState(() {
+                      tabController!.index = index;
+                      libraryController.tabIndex.value = index;
+                    });
+                  },
                   tabs: const [
                     Tab(text: 'Songs'),
                     Tab(text: 'Albums'),
@@ -238,28 +220,35 @@ class _LibraryPageState extends State<LibraryPage>
                   : TabBarView(
                       controller: tabController,
                       children: [
-                        MusicTab(listSongs: listSongs, tempPath: tempPath!,),
+                        MusicTab(
+                          listSongs: listSongs,
+                          tempPath: tempPath!,
+                        ),
                         AlbumsTab(
                             tempPath: tempPath!,
                             albums: listAlbums,
                             albumsList: sortedlistAlbums),
-                        ArtistsTab(tempPath: tempPath!, artists: listArtists, artistsList: sortedlistArtists),
-                        GenresTab(tempPath: tempPath!, genres: listGenres, genresList: sortedlistGenres),
+                        ArtistsTab(
+                            tempPath: tempPath!,
+                            artists: listArtists,
+                            artistsList: sortedlistArtists),
+                        GenresTab(
+                            tempPath: tempPath!,
+                            genres: listGenres,
+                            genresList: sortedlistGenres),
                       ],
                     ),
             ),
           )),
           if (listSongs.isNotEmpty)
-            Obx(() =>
-                Container(
+            Obx(() => Container(
                   color: Colors.black,
                   child: AnimatedSize(
                       duration: const Duration(milliseconds: 500),
                       child: controller.miniPlayer.value
                           ? MiniPlayer().mini(context, tempPath!, listSongs)
-                          :  Container(color: Colors.black)),
+                          : Container(color: Colors.black)),
                 )),
-
         ],
       ),
     );
@@ -269,7 +258,6 @@ class _LibraryPageState extends State<LibraryPage>
 class MusicTab extends StatefulWidget {
   final String tempPath;
   List<SongModel> listSongs = [];
-
 
   MusicTab({Key? key, required this.listSongs, required this.tempPath})
       : super(key: key);
@@ -288,47 +276,52 @@ class _MusicTabState extends State<MusicTab>
     var libraryController = Get.put(LibraryController());
     var controller = Get.put(PlayerController());
     super.build(context);
-    return ListView.builder(
-      itemCount: widget.listSongs.length,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
-        return Container(
-          margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
-          child: ListTile(
-            leading: OfflineAudioQuery.offlineArtworkWidget(
-              id: widget.listSongs[index].id,
-              type: ArtworkType.AUDIO,
-              tempPath: widget.tempPath,
-              fileName: widget.listSongs[index].displayNameWOExt,
-            ),
-            title: Text(
-              widget.listSongs[index].title.trim() != ''
-                  ? widget.listSongs[index].title
-                  : widget.listSongs[index].displayNameWOExt,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              widget.listSongs[index].artist!,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white),
-            ),
-            onTap: () {
-              // print(widget.songs[index].uri);
-              controller.playMusic(widget.listSongs[index], index);
 
-              PersistentNavBarNavigator.pushNewScreen(
-                context,
-                screen: Player(tempPath: widget.tempPath, listSongs: widget.listSongs,),
-                withNavBar: true,
-                pageTransitionAnimation: PageTransitionAnimation.fade,
-              );
-              controller.miniPlayer(false);
-              controller.player(true);
-            },
-          ),
-        );
-      },
+    return Container(
+      margin: const EdgeInsets.only(bottom: 25),
+      child: ListView.builder(
+        itemCount: widget.listSongs.length,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
+            child: ListTile(
+              leading: OfflineAudioQuery.offlineArtworkWidget(
+                id: widget.listSongs[index].id,
+                type: ArtworkType.AUDIO,
+                tempPath: widget.tempPath,
+                fileName: widget.listSongs[index].displayNameWOExt,
+              ),
+              title: Text(
+                widget.listSongs[index].title.trim() != ''
+                    ? widget.listSongs[index].title
+                    : widget.listSongs[index].displayNameWOExt,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                widget.listSongs[index].artist!,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                controller.playMusic(widget.listSongs[index], index);
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: Player(
+                    tempPath: widget.tempPath,
+                    listSongs: widget.listSongs,
+                  ),
+                  withNavBar: true,
+                  pageTransitionAnimation: PageTransitionAnimation.fade,
+                );
+                controller.miniPlayer(false);
+                controller.player(true);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -375,39 +368,42 @@ class _AlbumsTabState extends State<AlbumsTab>
 
     // Variable qui permet de savoir si l"utilisateur a cliqué sur un album et le garde en mémoire (si non affiche tout, si oui affiche l'album en question)
     if (libraryController.albumTab.value == false) {
-      return ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(top: 20, bottom: 10),
-        shrinkWrap: true,
-        itemExtent: 70.0,
-        itemCount: widget.albumsList.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: OfflineAudioQuery.offlineArtworkWidget(
-              id: widget.albums[widget.albumsList[index]]![0].id,
-              type: ArtworkType.AUDIO,
-              tempPath: widget.tempPath,
-              fileName: widget.albums[widget.albumsList[index]]![0]
-                  .displayNameWOExt,
-            ),
-            title: Text(
-              widget.albumsList[index],
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              '${widget.albums[widget.albumsList[index]]!.length} songs',
-              style: const TextStyle(color: Colors.white),
-            ),
-            onTap: () {
-              setState(() {
-                libraryController.albumTab(true);
-                libraryController.albumListIndex.value = index;
-                libraryController.tabIndex.value = 1;
-              });
-            },
-          );
-        },
+      return Container(
+        margin: const EdgeInsets.only(bottom: 25),
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(top: 20, bottom: 10),
+          shrinkWrap: true,
+          itemExtent: 70.0,
+          itemCount: widget.albumsList.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              leading: OfflineAudioQuery.offlineArtworkWidget(
+                id: widget.albums[widget.albumsList[index]]![0].id,
+                type: ArtworkType.AUDIO,
+                tempPath: widget.tempPath,
+                fileName: widget
+                    .albums[widget.albumsList[index]]![0].displayNameWOExt,
+              ),
+              title: Text(
+                widget.albumsList[index],
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                '${widget.albums[widget.albumsList[index]]!.length} songs',
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                setState(() {
+                  libraryController.albumTab(true);
+                  libraryController.albumListIndex.value = index;
+                  libraryController.tabIndex.value = 1;
+                });
+              },
+            );
+          },
+        ),
       );
     }
     // Quand l'utilisateur clique sur un album
@@ -418,9 +414,9 @@ class _AlbumsTabState extends State<AlbumsTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.black,
-              textStyle: const TextStyle(fontWeight: FontWeight.bold)
-            ),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.black,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
               setState(() {
                 libraryController.albumTab(false);
@@ -431,68 +427,86 @@ class _AlbumsTabState extends State<AlbumsTab>
         ),
         // Liste des chansons de l'album que l'utilisateur a sélectionné
         Expanded(
-          child: ListView.builder(
-            itemCount: widget.albums[widget.albumsList[libraryController
-                .albumListIndex.value]]!.length,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
-                child: ListTile(
-                  leading: OfflineAudioQuery.offlineArtworkWidget(
-                    id: widget.albums[widget.albumsList[libraryController
-                        .albumListIndex.value]]![index].id,
-                    type: ArtworkType.AUDIO,
-                    tempPath: widget.tempPath,
-                    fileName: widget.albums[widget.albumsList[libraryController
-                        .albumListIndex.value]]![index].displayNameWOExt,
-                  ),
-                  title: Text(
-                    widget.albums[widget.albumsList[libraryController
-                        .albumListIndex
-                        .value]]![index].title.trim() != ''
-                        ? widget.albums[widget.albumsList[libraryController
-                        .albumListIndex.value]]![index].title
-                        : widget.albums[widget.albumsList[libraryController
-                        .albumListIndex.value]]![index].displayNameWOExt,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    widget.albums[widget.albumsList[libraryController
-                        .albumListIndex
-                        .value]]![index].artist!,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  onTap: () {
-                    // print(widget.songs[index].uri);
-                    controller.playMusic(
-                        widget.albums[widget.albumsList[libraryController
-                            .albumListIndex.value]]![index], index);
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 25),
+            child: ListView.builder(
+              itemCount: widget
+                  .albums[widget
+                      .albumsList[libraryController.albumListIndex.value]]!
+                  .length,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                  child: ListTile(
+                    leading: OfflineAudioQuery.offlineArtworkWidget(
+                      id: widget
+                          .albums[widget.albumsList[
+                              libraryController.albumListIndex.value]]![index]
+                          .id,
+                      type: ArtworkType.AUDIO,
+                      tempPath: widget.tempPath,
+                      fileName: widget
+                          .albums[widget.albumsList[
+                              libraryController.albumListIndex.value]]![index]
+                          .displayNameWOExt,
+                    ),
+                    title: Text(
+                      widget
+                                  .albums[widget.albumsList[libraryController
+                                      .albumListIndex.value]]![index]
+                                  .title
+                                  .trim() !=
+                              ''
+                          ? widget
+                              .albums[widget.albumsList[libraryController
+                                  .albumListIndex.value]]![index]
+                              .title
+                          : widget
+                              .albums[widget.albumsList[libraryController
+                                  .albumListIndex.value]]![index]
+                              .displayNameWOExt,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      widget
+                          .albums[widget.albumsList[
+                              libraryController.albumListIndex.value]]![index]
+                          .artist!,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {
+                      // print(widget.songs[index].uri);
+                      controller.playMusic(
+                          widget.albums[widget.albumsList[
+                              libraryController.albumListIndex.value]]![index],
+                          index);
 
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: Player(tempPath: widget.tempPath,
-                        listSongs: widget.albums[widget
-                            .albumsList[libraryController
-                            .albumListIndex.value]]!,),
-                      withNavBar: true,
-                      pageTransitionAnimation: PageTransitionAnimation.fade,
-                    );
-                    controller.miniPlayer(false);
-                    controller.player(true);
-                  },
-                ),
-              );
-            },
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: Player(
+                          tempPath: widget.tempPath,
+                          listSongs: widget.albums[widget.albumsList[
+                              libraryController.albumListIndex.value]]!,
+                        ),
+                        withNavBar: true,
+                        pageTransitionAnimation: PageTransitionAnimation.fade,
+                      );
+                      controller.miniPlayer(false);
+                      controller.player(true);
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
     );
   }
 }
-
 
 class ArtistsTab extends StatefulWidget {
   final String tempPath;
@@ -536,39 +550,42 @@ class _ArtistsTabTabState extends State<ArtistsTab>
 
     // Variable qui permet de savoir si l"utilisateur a cliqué sur un album et le garde en mémoire (si non affiche tout, si oui affiche l'album en question)
     if (libraryController.artistTab.value == false) {
-      return ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(top: 20, bottom: 10),
-        shrinkWrap: true,
-        itemExtent: 70.0,
-        itemCount: widget.artistsList.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: OfflineAudioQuery.offlineArtworkWidget(
-              id: widget.artists[widget.artistsList[index]]![0].id,
-              type: ArtworkType.AUDIO,
-              tempPath: widget.tempPath,
-              fileName: widget.artists[widget.artistsList[index]]![0]
-                  .displayNameWOExt,
-            ),
-            title: Text(
-              widget.artistsList[index],
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              '${widget.artists[widget.artistsList[index]]!.length} songs',
-              style: const TextStyle(color: Colors.white),
-            ),
-            onTap: () {
-              setState(() {
-                libraryController.artistTab(true);
-                libraryController.artistListIndex.value = index;
-                libraryController.tabIndex.value = 2;
-              });
-            },
-          );
-        },
+      return Container(
+        margin: const EdgeInsets.only(bottom: 25),
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(top: 20, bottom: 10),
+          shrinkWrap: true,
+          itemExtent: 70.0,
+          itemCount: widget.artistsList.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              leading: OfflineAudioQuery.offlineArtworkWidget(
+                id: widget.artists[widget.artistsList[index]]![0].id,
+                type: ArtworkType.AUDIO,
+                tempPath: widget.tempPath,
+                fileName: widget
+                    .artists[widget.artistsList[index]]![0].displayNameWOExt,
+              ),
+              title: Text(
+                widget.artistsList[index],
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                '${widget.artists[widget.artistsList[index]]!.length} songs',
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                setState(() {
+                  libraryController.artistTab(true);
+                  libraryController.artistListIndex.value = index;
+                  libraryController.tabIndex.value = 2;
+                });
+              },
+            );
+          },
+        ),
       );
     }
     // Quand l'utilisateur clique sur un artiste
@@ -579,9 +596,9 @@ class _ArtistsTabTabState extends State<ArtistsTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.black,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)
-            ),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.black,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
               setState(() {
                 libraryController.artistTab(false);
@@ -592,58 +609,80 @@ class _ArtistsTabTabState extends State<ArtistsTab>
         ),
         // Liste des chansons de l'artiste que l'utilisateur a sélectionné
         Expanded(
-          child: ListView.builder(
-            itemCount: widget.artists[widget.artistsList[libraryController
-                .artistListIndex.value]]!.length,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
-                child: ListTile(
-                  leading: OfflineAudioQuery.offlineArtworkWidget(
-                    id: widget.artists[widget.artistsList[libraryController
-                        .artistListIndex.value]]![index].id,
-                    type: ArtworkType.AUDIO,
-                    tempPath: widget.tempPath,
-                    fileName: widget.artists[widget.artistsList[libraryController
-                        .artistListIndex.value]]![index].displayNameWOExt,
-                  ),
-                  title: Text(
-                    widget.artists[widget.artistsList[libraryController
-                        .artistListIndex.value]]![index].title.trim() != ''
-                        ? widget.artists[widget.artistsList[libraryController
-                        .artistListIndex.value]]![index].title
-                        : widget.artists[widget.artistsList[libraryController
-                        .artistListIndex.value]]![index].displayNameWOExt,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    widget.artists[widget.artistsList[libraryController
-                        .artistListIndex.value]]![index].artist!,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  onTap: () {
-                    // print(widget.songs[index].uri);
-                    controller.playMusic(
-                        widget.artists[widget.artistsList[libraryController
-                            .artistListIndex.value]]![index], index);
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 25),
+            child: ListView.builder(
+              itemCount: widget
+                  .artists[widget
+                      .artistsList[libraryController.artistListIndex.value]]!
+                  .length,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                  child: ListTile(
+                    leading: OfflineAudioQuery.offlineArtworkWidget(
+                      id: widget
+                          .artists[widget.artistsList[
+                              libraryController.artistListIndex.value]]![index]
+                          .id,
+                      type: ArtworkType.AUDIO,
+                      tempPath: widget.tempPath,
+                      fileName: widget
+                          .artists[widget.artistsList[
+                              libraryController.artistListIndex.value]]![index]
+                          .displayNameWOExt,
+                    ),
+                    title: Text(
+                      widget
+                                  .artists[widget.artistsList[libraryController
+                                      .artistListIndex.value]]![index]
+                                  .title
+                                  .trim() !=
+                              ''
+                          ? widget
+                              .artists[widget.artistsList[libraryController
+                                  .artistListIndex.value]]![index]
+                              .title
+                          : widget
+                              .artists[widget.artistsList[libraryController
+                                  .artistListIndex.value]]![index]
+                              .displayNameWOExt,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      widget
+                          .artists[widget.artistsList[
+                              libraryController.artistListIndex.value]]![index]
+                          .artist!,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {
+                      // print(widget.songs[index].uri);
+                      controller.playMusic(
+                          widget.artists[widget.artistsList[
+                              libraryController.artistListIndex.value]]![index],
+                          index);
 
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: Player(tempPath: widget.tempPath,
-                        listSongs: widget.artists[widget.artistsList[libraryController
-                            .artistListIndex.value]]!,),
-                      withNavBar: true,
-                      pageTransitionAnimation: PageTransitionAnimation.fade,
-                    );
-                    controller.miniPlayer(false);
-                    controller.player(true);
-                  },
-                ),
-              );
-            },
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: Player(
+                          tempPath: widget.tempPath,
+                          listSongs: widget.artists[widget.artistsList[
+                              libraryController.artistListIndex.value]]!,
+                        ),
+                        withNavBar: true,
+                        pageTransitionAnimation: PageTransitionAnimation.fade,
+                      );
+                      controller.miniPlayer(false);
+                      controller.player(true);
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -693,39 +732,42 @@ class _GenresTabTabState extends State<GenresTab>
 
     // Variable qui permet de savoir si l"utilisateur a cliqué sur un album et le garde en mémoire (si non affiche tout, si oui affiche les genres en question)
     if (libraryController.genreTab.value == false) {
-      return ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(top: 20, bottom: 10),
-        shrinkWrap: true,
-        itemExtent: 70.0,
-        itemCount: widget.genresList.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: OfflineAudioQuery.offlineArtworkWidget(
-              id: widget.genres[widget.genresList[index]]![0].id,
-              type: ArtworkType.AUDIO,
-              tempPath: widget.tempPath,
-              fileName: widget.genres[widget.genresList[index]]![0]
-                  .displayNameWOExt,
-            ),
-            title: Text(
-              widget.genresList[index],
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              '${widget.genres[widget.genresList[index]]!.length} songs',
-              style: const TextStyle(color: Colors.white),
-            ),
-            onTap: () {
-              setState(() {
-                libraryController.genreTab(true);
-                libraryController.genreListIndex.value = index;
-                libraryController.tabIndex.value = 3;
-              });
-            },
-          );
-        },
+      return Container(
+        margin: const EdgeInsets.only(bottom: 25),
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(top: 20, bottom: 10),
+          shrinkWrap: true,
+          itemExtent: 70.0,
+          itemCount: widget.genresList.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              leading: OfflineAudioQuery.offlineArtworkWidget(
+                id: widget.genres[widget.genresList[index]]![0].id,
+                type: ArtworkType.AUDIO,
+                tempPath: widget.tempPath,
+                fileName: widget
+                    .genres[widget.genresList[index]]![0].displayNameWOExt,
+              ),
+              title: Text(
+                widget.genresList[index],
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
+              ),
+              subtitle: Text(
+                '${widget.genres[widget.genresList[index]]!.length} songs',
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                setState(() {
+                  libraryController.genreTab(true);
+                  libraryController.genreListIndex.value = index;
+                  libraryController.tabIndex.value = 3;
+                });
+              },
+            );
+          },
+        ),
       );
     }
     // Quand l'utilisateur clique sur un genre
@@ -736,9 +778,9 @@ class _GenresTabTabState extends State<GenresTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.black,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)
-            ),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.black,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
               setState(() {
                 libraryController.genreTab(false);
@@ -749,62 +791,83 @@ class _GenresTabTabState extends State<GenresTab>
         ),
         // Liste des chansons de genre musicaux que l'utilisateur a sélectionné
         Expanded(
-          child: ListView.builder(
-            itemCount: widget.genres[widget.genresList[libraryController
-                .genreListIndex.value]]!.length,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
-                child: ListTile(
-                  leading: OfflineAudioQuery.offlineArtworkWidget(
-                    id: widget.genres[widget.genresList[libraryController
-                        .genreListIndex.value]]![index].id,
-                    type: ArtworkType.AUDIO,
-                    tempPath: widget.tempPath,
-                    fileName: widget.genres[widget.genresList[libraryController
-                        .genreListIndex.value]]![index].displayNameWOExt,
-                  ),
-                  title: Text(
-                    widget.genres[widget.genresList[libraryController
-                        .genreListIndex.value]]![index].title.trim() != ''
-                        ? widget.genres[widget.genresList[libraryController
-                        .genreListIndex.value]]![index].title
-                        : widget.genres[widget.genresList[libraryController
-                        .genreListIndex.value]]![index].displayNameWOExt,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    widget.genres[widget.genresList[libraryController
-                        .genreListIndex.value]]![index].genre!,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  onTap: () {
-                    // print(widget.songs[index].uri);
-                    controller.playMusic(
-                        widget.genres[widget.genresList[libraryController
-                            .genreListIndex.value]]![index], index);
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 25),
+            child: ListView.builder(
+              itemCount: widget
+                  .genres[widget
+                      .genresList[libraryController.genreListIndex.value]]!
+                  .length,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                  child: ListTile(
+                    leading: OfflineAudioQuery.offlineArtworkWidget(
+                      id: widget
+                          .genres[widget.genresList[
+                              libraryController.genreListIndex.value]]![index]
+                          .id,
+                      type: ArtworkType.AUDIO,
+                      tempPath: widget.tempPath,
+                      fileName: widget
+                          .genres[widget.genresList[
+                              libraryController.genreListIndex.value]]![index]
+                          .displayNameWOExt,
+                    ),
+                    title: Text(
+                      widget
+                                  .genres[widget.genresList[libraryController
+                                      .genreListIndex.value]]![index]
+                                  .title
+                                  .trim() !=
+                              ''
+                          ? widget
+                              .genres[widget.genresList[libraryController
+                                  .genreListIndex.value]]![index]
+                              .title
+                          : widget
+                              .genres[widget.genresList[libraryController
+                                  .genreListIndex.value]]![index]
+                              .displayNameWOExt,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      widget
+                          .genres[widget.genresList[
+                              libraryController.genreListIndex.value]]![index]
+                          .genre!,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    onTap: () {
+                      // print(widget.songs[index].uri);
+                      controller.playMusic(
+                          widget.genres[widget.genresList[
+                              libraryController.genreListIndex.value]]![index],
+                          index);
 
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: Player(tempPath: widget.tempPath,
-                        listSongs: widget.genres[widget.genresList[libraryController
-                            .genreListIndex.value]]!,),
-                      withNavBar: true,
-                      pageTransitionAnimation: PageTransitionAnimation.fade,
-                    );
-                    controller.miniPlayer(false);
-                    controller.player(true);
-                  },
-                ),
-              );
-            },
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: Player(
+                          tempPath: widget.tempPath,
+                          listSongs: widget.genres[widget.genresList[
+                              libraryController.genreListIndex.value]]!,
+                        ),
+                        withNavBar: true,
+                        pageTransitionAnimation: PageTransitionAnimation.fade,
+                      );
+                      controller.miniPlayer(false);
+                      controller.player(true);
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
     );
   }
 }
-

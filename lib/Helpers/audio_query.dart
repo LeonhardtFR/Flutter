@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
 
-
 class OfflineAudioQuery {
   static OnAudioQuery audioQuery = OnAudioQuery();
   static final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
@@ -165,7 +164,7 @@ class OfflineAudioQuery {
                       fit: BoxFit.cover,
                       height: height,
                       width: width,
-                      image: const AssetImage('assets/cover.jpg'),
+                      image: const AssetImage('assets/cover.png'),
                     );
               },
             ),
@@ -182,14 +181,12 @@ class OfflineAudioQuery {
                 fit: BoxFit.cover,
                 height: height,
                 width: width,
-                image: const AssetImage('assets/cover.jpg'),
+                image: const AssetImage('assets/cover.png'),
               ),
         );
       },
     );
   }
-
-
 
 //   static Widget offlineArtworkWidget(
 //       {required String artwork, required double size}) {
@@ -210,6 +207,4 @@ class OfflineAudioQuery {
 //     );
 //   }
 // }) {
-
 }
-
