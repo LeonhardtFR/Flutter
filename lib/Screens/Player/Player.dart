@@ -39,7 +39,6 @@ class _PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
-
     controller.audioPlayer.playerStateStream.listen((playerState) {
       if (playerState.processingState == ProcessingState.completed) {
         _onComplete();
@@ -192,6 +191,9 @@ class _PlayerState extends State<Player> {
 
                           IconButton(
                             onPressed: () {
+                              // Navigator.pop(context);
+                              // print(buttonNavigationController.controlTabIndex.value);
+
                               if (controller.isPlaying.value) {
                                 controller.audioPlayer.pause();
                                 controller.isPlaying(false);

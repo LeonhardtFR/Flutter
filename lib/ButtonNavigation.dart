@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:osbrosound/Controllers/playerController.dart';
+import 'package:osbrosound/Controllers/radioPlayerController.dart';
 import 'package:osbrosound/Screens/Radio/radio.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'Controllers/playerController.dart';
 import 'Screens/Library/library.dart';
 import 'Screens/Settings/Settings.dart';
 import 'Screens/Youtube/YoutubeHome.dart';
@@ -16,12 +17,13 @@ class ButtonNavigation extends StatefulWidget {
 }
 
 class _ButtonNavigationState extends State<ButtonNavigation> {
+  RadioAudioController radioAudioController = Get.find<RadioAudioController>();
   PlayerController playerController = Get.find<PlayerController>();
   List<Widget> _NavScreens() {
     return [
       const LibraryPage(),
       const YoutubeHomeScreen(),
-      RadioScreen(),
+      const RadioScreen(),
       const SettingsScreen(),
     ];
   }
@@ -58,20 +60,23 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
     ];
   }
 
-  int selectedIndex = 0;
 
-  final List _pages = [
-    const LibraryPage(),
-    const YoutubeHomeScreen(),
-    RadioScreen(),
-    const SettingsScreen(),
-  ];
+  void controlTabPlayer(int index) {
+    if (index == 0) {
+      radioAudioController.isPlaying.value = false;
+      radioAudioController.stopRadio();
+    } else if (index == 2) {
+      playerController.isPlaying.value = false;
+      playerController.stopPlayer();
+    }
+  }
 
   // @override
   Widget build(BuildContext context) {
     return Center(
       child: PersistentTabView(
         onItemSelected: (index) {
+          controlTabPlayer(index);
           print("Selected item index: $index");
         },
         context,

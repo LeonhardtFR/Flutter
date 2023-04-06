@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -306,6 +305,13 @@ class _MusicTabState extends State<MusicTab>
               ),
               onTap: () {
                 controller.playMusic(widget.listSongs[index], index);
+                // Get.to(() => Player(
+                //   tempPath: widget.tempPath,
+                //   listSongs: widget.listSongs,
+                // )
+                // );
+
+
                 PersistentNavBarNavigator.pushNewScreen(
                   context,
                   screen: Player(

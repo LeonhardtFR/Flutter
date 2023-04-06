@@ -1,85 +1,185 @@
 import 'dart:async';
-import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
-import 'package:logging/logging.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:osbrosound/Controllers/radioPlayerController.dart';
 import 'dart:convert';
 
-import '../../Controllers/playerController.dart';
-import '../../Helpers/audio_query.dart';
-import '../../Models/RadioStationModel.dart';
-import '../Player/Player.dart';
 
-// 2. Liste de stations de radio avec les informations préconfigurées
-final List<RadioStation> radioStations = [
-  RadioStation(
-    imageUrl: 'https://example.com/image1.png',
-    title: 'Radio 1',
-    artist: 'Artist 1',
-    streamUrl: 'https://streamurl1.com',
-  ),
-  RadioStation(
-    imageUrl: 'https://example.com/image2.png',
-    title: 'Radio 2',
-    artist: 'Artist 2',
-    streamUrl: 'https://streamurl2.com',
-  ),
-  // Ajoutez plus de stations de radio ici
-];
+class RadioScreen extends StatefulWidget {
+  const RadioScreen({Key? key}) : super(key: key);
 
-class RadioScreen extends StatelessWidget {
-  RadioScreen({Key? key}) : super(key: key);
+  @override
+  State<RadioScreen> createState() => _RadioScreenState();
+}
 
-  OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
-  List<SongModel> listSongs = [];
+class _RadioScreenState extends State<RadioScreen> {
+  final TextEditingController controllerUrl = TextEditingController(
+      text: 'https://api.radioking.io/widget/radio/bankable-radio/track/current');
+  static const url = 'https://listen.radioking.com/radio/242578/stream/286663';
 
+  final RadioAudioController radioAudioController = Get.put(RadioAudioController());
+  bool _isPlaying = false;
+
+  StreamController<Map<String, dynamic>> _metadataController =
+  StreamController<Map<String, dynamic>>.broadcast();
+
+  Map<String, dynamic> _previousMetadata = {
+    'title': '',
+    'artist': '',
+    'album': '',
+    'cover': ''
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    // _startMetadataUpdates();
+  }
+
+  void _startMetadataUpdates() {
+    Timer.periodic(const Duration(seconds: 10), (timer) async {
+      try {
+        final newMetadata = await getCurrentTrackMetadata();
+
+        if (_previousMetadata['title'] != newMetadata['title']) {
+          _previousMetadata = newMetadata;
+          _metadataController.add(newMetadata);
+        }
+      } catch (e) {
+        print("Erreur lors de la récupération des métadonnées : $e");
+      }
+    });
+  }
+
+  Future<Map<String, dynamic>> getCurrentTrackMetadata() async {
+    final response = await http.get(Uri.parse(
+        'https://api.radioking.io/widget/radio/bankable-radio/track/current'));
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      final metadata = {
+        'title': jsonResponse['title'],
+        'artist': jsonResponse['artist'],
+        'album': jsonResponse['album'] != null
+            ? jsonResponse['album']
+            : 'Unknown',
+        'cover': jsonResponse['cover'],
+      };
+      return metadata;
+    } else {
+      throw Exception('Erreur lors de la récupération des métadonnées');
+    }
+  }
+
+  @override
+  void dispose() {
+    _metadataController.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var controller = Get.put(PlayerController());
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Container(
-        margin: const EdgeInsets.only(bottom: 25),
-        child: ListView.builder(
-          itemCount: radioStations.length,
-          physics: const BouncingScrollPhysics(),
-          itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
-              child: ListTile(
-                title: Text(
-                  radioStations[index].title,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white),
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          title: const Text('Radio'),
+          backgroundColor: Colors.black,
+        ),
+        body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+          Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: TextField(
+            controller: controllerUrl,
+            decoration: const InputDecoration(
+              hintText: 'Enter a radio api',
+              hintStyle: TextStyle(color: Colors.white),
+              border: OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.grey,
                 ),
-                subtitle: Text(
-                  radioStations[index].artist!,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-                  controller.playMusic(radioStations[index], index);
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: Player(
-                      tempPath: "",
-                      listSongs: radioStations,
-                    ),
-                    withNavBar: true,
-                    pageTransitionAnimation: PageTransitionAnimation.fade,
-                  );
-                  controller.miniPlayer(false);
-                  controller.player(true);
-                },
               ),
-            );
-          },
+            ),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+      Obx(
+            () => IconButton(
+        onPressed: () async {
+        radioAudioController.isPlaying.value = !radioAudioController.isPlaying.value;
+      if (radioAudioController.isPlaying.value) {
+        _startMetadataUpdates();
+        await radioAudioController.playRadio(url);
+      } else {
+        radioAudioController.stopRadio();
+      }
+        },
+          icon: radioAudioController.isPlaying.value
+              ? const Icon(Icons.pause,
+              color: Colors.white, size: 36)
+              : const Icon(Icons.play_arrow,
+              color: Colors.white, size: 36),
         ),
       ),
+
+                const SizedBox(height: 16),
+                StreamBuilder<Map<String, dynamic>>(
+                  stream: _metadataController.stream,
+                  initialData: _previousMetadata,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                    final metadata = snapshot.data;
+                    return metadata != null
+                        ? Column(
+                      children: [
+                        Text(
+                          'Title : ${metadata['title']}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Text(
+                          'Artist : ${metadata['artist']}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Text(
+                          'Album : ${metadata['album']}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        metadata['cover'] != null
+                            ? Image.network(
+                          metadata['cover'],
+                          width: 250,
+                          height: 250,
+                        )
+                            : const SizedBox(),
+                      ],
+                    )
+                        : const CircularProgressIndicator();
+                  },
+                ),
+              ],
+          ),
+        ),
     );
   }
 }
+
