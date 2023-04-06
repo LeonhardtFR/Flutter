@@ -21,7 +21,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
     return [
       const LibraryPage(),
       const YoutubeHomeScreen(),
-      const RadioScreen(),
+      RadioScreen(),
       const SettingsScreen(),
     ];
   }
@@ -63,7 +63,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
   final List _pages = [
     const LibraryPage(),
     const YoutubeHomeScreen(),
-    const RadioScreen(),
+    RadioScreen(),
     const SettingsScreen(),
   ];
 

@@ -47,7 +47,7 @@ class PlayerController extends GetxController {
     audioPlayer.seek(duration);
   }
 
-  playMusic(SongModel songs, index) {
+  playMusic(songs, index) {
     playIndex.value = index;
     Uri uriSong = Uri.parse(songs.uri.toString());
     print('Test : ' + songs.id.toString());

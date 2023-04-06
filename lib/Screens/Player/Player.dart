@@ -13,11 +13,8 @@ import 'package:osbrosound/Screens/Player/MiniPlayer.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
-// Je n'ai pas trouvé comment "allumé" le miniPlayer quand on quitte le "Player" automatiquement
-// dans une statelessWidget a l'aide de Get. J'ai donc utilisé un statefullWidget qui permet
-// au final de gagner en ressource comme je maitrise l'ouverture et fermerture du miniPlayer.
 class Player extends StatefulWidget {
-  final List<SongModel> listSongs;
+  final List<dynamic> listSongs;
   final String tempPath;
 
   const Player({Key? key, required this.tempPath, required this.listSongs})
@@ -107,15 +104,6 @@ class _PlayerState extends State<Player> {
                 child: Obx(
                   () => Column(
                     children: [
-                      // Text(
-                      //     listSongs[controller.playIndex.value]
-                      //         .displayNameWOExt,
-                      //     textAlign: TextAlign.center,
-                      //     style: const TextStyle(
-                      //         fontSize: 24,
-                      //         fontWeight: FontWeight.bold,
-                      //         color: Colors.white)),
-
                       // TITRE MUSIQUE
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -195,7 +183,6 @@ class _PlayerState extends State<Player> {
                                 } catch (e) {
                                   print("INFO : list index out of range");
                                 }
-                                // controller.playMusic(songs[controller.playIndex.value - 1].uri, controller.playIndex.value - 1);
                               },
                               icon: const Icon(
                                 Icons.skip_previous,
@@ -247,13 +234,6 @@ class _PlayerState extends State<Player> {
           ],
         ),
       ),
-      // bottomNavigationBar: Container(
-      //   height: 100,
-      //   color: Colors.black,
-      //   child: MiniPlayer().mini(context, tempPath, listSongs),
-      // )
-
-      // bottomNavigationBar: Text("test", style: TextStyle(color: Colors.white),),
     );
   }
 }
