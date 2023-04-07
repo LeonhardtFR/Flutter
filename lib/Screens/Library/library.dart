@@ -10,6 +10,7 @@ import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
 import 'package:osbrosound/Services/player_service.dart';
+import 'package:osbrosound/Widgets/search_bar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:logging/logging.dart';
@@ -204,14 +205,33 @@ class _LibraryPageState extends State<LibraryPage>
                 // Icone de recherche dans l'AppBar
                 actions: [
                   IconButton(
-                    onPressed: () {
-                      // showSearch(
-                      //     context: context,
-                      //     delegate: Search(
-                      //         listSongs: listSongs, tempPath: tempPath!));
+                    onPressed: () async {
+                      SongModel? selectedSong = await showSearch(
+                        context: context,
+                        delegate: SongSearchDelegate(listSongs: listSongs),
+                      );
+
+                      if (selectedSong != null) {
+                        int selectedIndex = listSongs.indexOf(selectedSong);
+                        var controller = Get.put(PlayerController());
+                        controller.playMusic(listSongs[selectedIndex], selectedIndex);
+
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: Player(
+                            tempPath: tempPath!,
+                            listSongs: listSongs,
+                          ),
+                          withNavBar: true,
+                          pageTransitionAnimation: PageTransitionAnimation.fade,
+                        );
+                        controller.miniPlayer(false);
+                        controller.player(true);
+                      }
                     },
                     icon: const Icon(Icons.search),
                   ),
+
                 ],
               ),
               body: !musicExist
