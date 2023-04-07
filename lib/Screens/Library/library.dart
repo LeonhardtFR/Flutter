@@ -205,7 +205,10 @@ class _LibraryPageState extends State<LibraryPage>
                 actions: [
                   IconButton(
                     onPressed: () {
-                      // showSearch(context: context, delegate: delegate)
+                      // showSearch(
+                      //     context: context,
+                      //     delegate: Search(
+                      //         listSongs: listSongs, tempPath: tempPath!));
                     },
                     icon: const Icon(Icons.search),
                   ),
@@ -310,7 +313,6 @@ class _MusicTabState extends State<MusicTab>
                 //   listSongs: widget.listSongs,
                 // )
                 // );
-
 
                 PersistentNavBarNavigator.pushNewScreen(
                   context,

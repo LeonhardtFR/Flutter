@@ -13,7 +13,6 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  file_picker: ^5.2.5
   just_audio: ^0.9.31
   on_audio_query: ^2.6.2
   permission_handler: ^10.2.0
@@ -32,6 +31,9 @@ dependencies:
 
   #  for image network caching
   cached_network_image: ^3.2.3
+
+  # Folder picker selector
+  file_picker: ^5.2.7
 
 flutter_icons:
   android: true

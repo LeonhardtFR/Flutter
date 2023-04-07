@@ -24,7 +24,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
       const LibraryPage(),
       const YoutubeHomeScreen(),
       const RadioScreen(),
-      const SettingsScreen(),
+      SettingsScreen(),
     ];
   }
 
@@ -59,7 +59,6 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
       ),
     ];
   }
-
 
   void controlTabPlayer(int index) {
     if (index == 0) {
