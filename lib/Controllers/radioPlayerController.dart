@@ -26,8 +26,7 @@ class RadioAudioController extends GetxController {
       print("Erreur lors de la lecture de la radio: $e");
     }
   }
-
-
+  
   void pauseRadio() {
     _audioPlayer.pause();
   }
