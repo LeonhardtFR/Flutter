@@ -11,13 +11,12 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 class MiniPlayer {
   mini(BuildContext context, String tempPath, List<SongModel> listSongs) {
     var controller = Get.find<PlayerController>();
-    // controller.miniPlayer(true);
     return Container(
       key: const Key('miniPlayer'),
-      padding: const EdgeInsets.only(bottom: 30.0, top: 0, left: 12.5, right: 12.5),
+      padding: const EdgeInsets.only(
+          bottom: 30.0, top: 0, left: 12.5, right: 12.5),
       color: Colors.transparent,
       child: Column(children: [
-        // if (controller.miniPlayer.value)
         GestureDetector(
           onTap: () {
             PersistentNavBarNavigator.pushNewScreen(
@@ -28,57 +27,59 @@ class MiniPlayer {
             );
             controller.miniPlayer(false);
           },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-                padding: EdgeInsets.zero,
-                icon: Icon(
-                    controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
-                    color: Colors.white),
-                onPressed: () {
-                  if (controller.isPlaying.value) {
-                    controller.audioPlayer.pause();
-                    controller.isPlaying(false);
-                  } else {
-                    controller.audioPlayer.play();
-                    controller.isPlaying(true);
-                  }
-                }),
-            Expanded(
-                child: Container(
-                  height: 25,
-              child: Marquee(
-                blankSpace: 35,
-              velocity: 25,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold), text: listSongs[controller.playIndex.value].title,
-            ))),
-            const SizedBox(width: 8.0),
-            Text(
-              "[" +
-                  listSongs[controller.playIndex.value]
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: Icon(
+                        controller.isPlaying.value ? Icons.pause : Icons
+                            .play_arrow,
+                        color: Colors.white),
+                    onPressed: () {
+                      if (controller.isPlaying.value) {
+                        controller.audioPlayer.pause();
+                        controller.isPlaying(false);
+                      } else {
+                        controller.audioPlayer.play();
+                        controller.isPlaying(true);
+                      }
+                    }),
+                Expanded(
+                    child: SizedBox(
+                        height: 25,
+                        child: Marquee(
+                          blankSpace: 35,
+                          velocity: 25,
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                          text: listSongs[controller.playIndex.value].title,
+                        ))),
+                const SizedBox(width: 8.0),
+                Text(
+                  "[${listSongs[controller.playIndex.value]
                       .fileExtension
-                      .toUpperCase() +
-                  "]",
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+                      .toUpperCase()}]",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.stop, color: Colors.white),
+                  onPressed: () {
+                    controller.miniPlayer(false);
+                    controller.audioPlayer.pause();
+                    controller.audioPlayer.stop();
+                    controller.isPlaying(false);
+                  },
+                ),
+              ],
             ),
-            IconButton(
-              icon: const Icon(Icons.stop, color: Colors.white),
-              onPressed: () {
-                controller.miniPlayer(false);
-                controller.audioPlayer.pause();
-                controller.audioPlayer.stop();
-                controller.isPlaying(false);
-              },
-            ),
-          ],
-        ),
-        ),
-        // if (controller.miniPlayer.value)
+          ),
         Row(
           children: [
             Text(controller.position.value,

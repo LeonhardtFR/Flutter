@@ -2,11 +2,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
 import 'package:osbrosound/Controllers/radioPlayerController.dart';
 import 'dart:convert';
-
 
 class RadioScreen extends StatefulWidget {
   const RadioScreen({Key? key}) : super(key: key);
@@ -18,12 +16,12 @@ class RadioScreen extends StatefulWidget {
 class _RadioScreenState extends State<RadioScreen> {
   final TextEditingController controllerUrl = TextEditingController(
       text: 'https://api.radioking.io/widget/radio/bankable-radio/track/current');
-  static const url = 'https://listen.radioking.com/radio/242578/stream/286663';
+  // static const url = 'https://listen.radioking.com/radio/242578/stream/286663';
 
   final RadioAudioController radioAudioController = Get.put(RadioAudioController());
   bool _isPlaying = false;
 
-  StreamController<Map<String, dynamic>> _metadataController =
+  final StreamController<Map<String, dynamic>> _metadataController =
   StreamController<Map<String, dynamic>>.broadcast();
 
   Map<String, dynamic> _previousMetadata = {
@@ -36,20 +34,23 @@ class _RadioScreenState extends State<RadioScreen> {
   @override
   void initState() {
     super.initState();
-    // _startMetadataUpdates();
   }
 
   void _startMetadataUpdates() {
-    Timer.periodic(const Duration(seconds: 10), (timer) async {
+    Duration refreshMetadata;
+    refreshMetadata = const Duration(seconds: 5);
+
+    Timer.periodic(refreshMetadata, (timer) async {
       try {
         final newMetadata = await getCurrentTrackMetadata();
-
         if (_previousMetadata['title'] != newMetadata['title']) {
           _previousMetadata = newMetadata;
           _metadataController.add(newMetadata);
         }
       } catch (e) {
-        print("Erreur lors de la récupération des métadonnées : $e");
+        if (kDebugMode) {
+          print("Erreur lors de la récupération des métadonnées : $e");
+        }
       }
     });
   }
@@ -63,9 +64,7 @@ class _RadioScreenState extends State<RadioScreen> {
       final metadata = {
         'title': jsonResponse['title'],
         'artist': jsonResponse['artist'],
-        'album': jsonResponse['album'] != null
-            ? jsonResponse['album']
-            : 'Unknown',
+        'album': jsonResponse['album'] ?? 'Unknown',
         'cover': jsonResponse['cover'],
       };
       return metadata;
@@ -119,7 +118,7 @@ class _RadioScreenState extends State<RadioScreen> {
         radioAudioController.isPlaying.value = !radioAudioController.isPlaying.value;
       if (radioAudioController.isPlaying.value) {
         _startMetadataUpdates();
-        await radioAudioController.playRadio(url);
+        await radioAudioController.playRadio(controllerUrl.text);
       } else {
         radioAudioController.stopRadio();
       }
@@ -139,7 +138,7 @@ class _RadioScreenState extends State<RadioScreen> {
                   builder: (BuildContext context,
                       AsyncSnapshot<Map<String, dynamic>> snapshot) {
                     final metadata = snapshot.data;
-                    return metadata != null
+                    return metadata!['title'] != ""
                         ? Column(
                       children: [
                         Text(
@@ -164,7 +163,7 @@ class _RadioScreenState extends State<RadioScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        metadata['cover'] != null
+                        metadata['cover'] != ""
                             ? Image.network(
                           metadata['cover'],
                           width: 250,
@@ -173,7 +172,7 @@ class _RadioScreenState extends State<RadioScreen> {
                             : const SizedBox(),
                       ],
                     )
-                        : const CircularProgressIndicator();
+                        : const SizedBox();
                   },
                 ),
               ],

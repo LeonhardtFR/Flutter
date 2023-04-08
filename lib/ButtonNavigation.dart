@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -35,25 +36,21 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
     return [
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.library_music),
-        // title: ("Library"),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.youtube_searched_for),
-        // title: ("Youtube"),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.settings_input_antenna),
-        // title: ("Radio"),
+        icon: const Icon(Icons.settings_input_antenna),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.settings),
-        // title: ("Settings"),
+        icon: const Icon(Icons.settings),
         activeColorPrimary: Colors.amber.shade800,
         inactiveColorPrimary: Colors.grey,
       ),
@@ -76,7 +73,9 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
       child: PersistentTabView(
         onItemSelected: (index) {
           controlTabPlayer(index);
-          print("Selected item index: $index");
+          if (kDebugMode) {
+            print("Selected item index: $index");
+          }
         },
         context,
         controller: _controller,
