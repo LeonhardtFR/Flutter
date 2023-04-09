@@ -41,6 +41,9 @@ dependencies:
   # sauvegarde les données en local
   shared_preferences: ^2.1.0
 
+  # dateformat + localization
+  intl: ^0.18.0
+
 flutter_icons:
   android: true
   ios: true
