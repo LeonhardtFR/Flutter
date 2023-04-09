@@ -87,12 +87,12 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
         resizeToAvoidBottomInset: true,
         hideNavigationBarWhenKeyboardShows: true,
         decoration: NavBarDecoration(
-          borderRadius: BorderRadius.circular(15.0),
+          borderRadius: BorderRadius.circular(20.0),
         ),
         popAllScreensOnTapOfSelectedTab: true,
         navBarStyle: NavBarStyle.style6,
         navBarHeight: 39,
-        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+        margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
       ),
     );
   }

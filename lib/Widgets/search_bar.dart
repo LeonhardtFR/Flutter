@@ -16,9 +16,9 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
   List<Widget> buildActions(BuildContext context) {
     return [
       Container(
-        color: Colors.black,
+        color: Theme.of(context).colorScheme.primary,
         child: IconButton(
-          icon: const Icon(Icons.clear),
+          icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onPrimary),
           onPressed: () {
             query = '';
           },
@@ -30,9 +30,9 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
   @override
   Widget buildLeading(BuildContext context) {
     return Container(
-      color: Colors.black,
+      color: Theme.of(context).colorScheme.primary,
       child: IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onPrimary),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -51,13 +51,13 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
         .toList();
 
     return Container(
-      color: Colors.black,
+      color: Theme.of(context).colorScheme.primary,
       child: ListView.builder(
         itemCount: suggestions.length,
         itemBuilder: (context, index) {
           final song = suggestions[index];
           return ListTile(
-            title: Text(song.title, style: const TextStyle(color: Colors.white),),
+            title: Text(song.title, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),),
             onTap: () {
               var controller = Get.put(PlayerController());
               int selectedIndex = listSongs.indexOf(song);

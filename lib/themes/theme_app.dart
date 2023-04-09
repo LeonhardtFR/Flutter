@@ -91,16 +91,16 @@ ThemeData appBarThemeApp(BuildContext context) {
   assert(theme != null);
   return theme.copyWith(
     appBarTheme: theme.appBarTheme.copyWith(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
     ),
     inputDecorationTheme: theme.inputDecorationTheme.copyWith(
-      hintStyle: const TextStyle(color: Colors.white70),
+      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
     ),
     textTheme: theme.textTheme.copyWith(
-      titleLarge: const TextStyle(color: Colors.white),
+      titleLarge: TextStyle(color: Theme.of(context).colorScheme.onSurface),
     ),
     textSelectionTheme: theme.textSelectionTheme.copyWith(
-      cursorColor: Colors.white,
+      cursorColor: Theme.of(context).colorScheme.onSurface,
     ),
   );
 }

@@ -20,10 +20,11 @@ class _YoutubeHomeScreenState extends State<YoutubeHomeScreen> {
       children: [
         Expanded(
           child: Scaffold(
-            backgroundColor: Colors.black,
+            backgroundColor: Theme.of(context).colorScheme.background,
             appBar: AppBar(
-              title: const Text('Youtube Search'),
-              backgroundColor: Colors.black,
+              elevation: 0,
+              title: Text('Youtube Search', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
+              backgroundColor: Theme.of(context).colorScheme.background,
             ),
             body: Center(
               child: Column(
@@ -33,26 +34,26 @@ class _YoutubeHomeScreenState extends State<YoutubeHomeScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextField(
                       controller: youtubeController.controllerYtbUrl,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Paste Youtube URL music',
                         hintStyle: TextStyle(
-                          color: Colors.grey,
+                          color: Theme.of(context).unselectedWidgetColor,
                         ),
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.grey,
+                            color: Theme.of(context).colorScheme.onBackground,
                           ),
                         ),
                       ),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    child: const Text('Télécharger'),
+                    child: Text('Télécharger', style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
                     onPressed: () {
                       youtubeController.getAudio();
                     },

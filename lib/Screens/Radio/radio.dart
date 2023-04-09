@@ -16,10 +16,8 @@ class RadioScreen extends StatefulWidget {
 class _RadioScreenState extends State<RadioScreen> {
   final TextEditingController controllerUrl = TextEditingController(
       text: 'https://api.radioking.io/widget/radio/bankable-radio/track/current');
-  // static const url = 'https://listen.radioking.com/radio/242578/stream/286663';
 
   final RadioAudioController radioAudioController = Get.put(RadioAudioController());
-  bool _isPlaying = false;
 
   final StreamController<Map<String, dynamic>> _metadataController =
   StreamController<Map<String, dynamic>>.broadcast();
@@ -82,10 +80,16 @@ class _RadioScreenState extends State<RadioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .background,
         appBar: AppBar(
           title: const Text('Radio'),
-          backgroundColor: Colors.black,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .background,
         ),
         body: Center(
           child: Column(
@@ -95,18 +99,19 @@ class _RadioScreenState extends State<RadioScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: TextField(
             controller: controllerUrl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Enter a radio api',
-              hintStyle: TextStyle(color: Colors.white),
+              hintStyle: TextStyle(color:
+              Theme.of(context).colorScheme.onBackground),
               border: OutlineInputBorder(),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.grey,
+                  color: Theme.of(context).unselectedWidgetColor,
                 ),
               ),
             ),
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onBackground,
             ),
           ),
         ),
@@ -124,10 +129,10 @@ class _RadioScreenState extends State<RadioScreen> {
       }
         },
           icon: radioAudioController.isPlaying.value
-              ? const Icon(Icons.pause,
-              color: Colors.white, size: 36)
-              : const Icon(Icons.play_arrow,
-              color: Colors.white, size: 36),
+              ? Icon(Icons.pause,
+              color: Theme.of(context).colorScheme.onBackground, size: 36)
+              : Icon(Icons.play_arrow,
+              color: Theme.of(context).colorScheme.onBackground, size: 36),
         ),
       ),
 
@@ -143,22 +148,22 @@ class _RadioScreenState extends State<RadioScreen> {
                       children: [
                         Text(
                           'Title : ${metadata['title']}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
                             fontSize: 20,
                           ),
                         ),
                         Text(
                           'Artist : ${metadata['artist']}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
                             fontSize: 20,
                           ),
                         ),
                         Text(
                           'Album : ${metadata['album']}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
                             fontSize: 20,
                           ),
                         ),

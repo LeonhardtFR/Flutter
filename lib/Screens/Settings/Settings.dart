@@ -28,6 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             .of(context)
             .colorScheme
             .background,
+        elevation: 0,
       ),
       backgroundColor: Theme
           .of(context)
@@ -41,9 +42,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _SingleSection(
                 title: "General",
                 children: [
-                  const _CustomListTile(
-                      title: "About Phone",
-                      icon: CupertinoIcons.device_phone_portrait),
                   Obx(
                         () => _CustomListTile(
                     title: "Dark Mode",
@@ -84,9 +82,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const _CustomListTile(
                       title: "Storage music",
                       icon: CupertinoIcons.folder),
-                  const _CustomListTile(
-                      title: "System Apps Updater",
-                      icon: CupertinoIcons.cloud_download),
                 ],
               ),
 
@@ -97,14 +92,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: "Download Quality",
                       icon: CupertinoIcons.cloud_download),
                   _CustomListTile(
-                      title: "Lock Screen", icon: CupertinoIcons.lock),
+                      title: "Folder download",
+                      icon: Icons.save_as),
+                ],
+              ),
+
+              const _SingleSection(
+                title: "About the application",
+                children: [
                   _CustomListTile(
-                      title: "Display", icon: CupertinoIcons.brightness),
+                      title: "Information",
+                      icon: CupertinoIcons.info),
                   _CustomListTile(
-                      title: "Sound and Vibration",
-                      icon: CupertinoIcons.speaker_2),
-                  _CustomListTile(
-                      title: "Themes", icon: CupertinoIcons.paintbrush)
+                      title: "Version",
+                      icon: Icons.update,
+                      trailing: Text("0.1.0"),
+                  ),
                 ],
               ),
             ],
@@ -154,8 +157,7 @@ class _SingleSection extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             title.toUpperCase(),
-            style:
-            Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 16),
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 16),
           ),
         ),
         Container(
