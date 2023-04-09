@@ -16,7 +16,7 @@ class MiniPlayer {
       key: const Key('miniPlayer'),
       padding: const EdgeInsets.only(
           bottom: 30.0, top: 0, left: 12.5, right: 12.5),
-      color: Colors.transparent,
+      color: Theme.of(context).colorScheme.onSecondaryContainer,
       child: Column(children: [
         GestureDetector(
           onTap: () {
@@ -37,7 +37,7 @@ class MiniPlayer {
                     icon: Icon(
                         controller.isPlaying.value ? Icons.pause : Icons
                             .play_arrow,
-                        color: Colors.white),
+                        color: Theme.of(context).colorScheme.secondary),
                     onPressed: () {
                       if (controller.isPlaying.value) {
                         controller.audioPlayer.pause();
@@ -50,38 +50,28 @@ class MiniPlayer {
                 Expanded(
                   child: AnimatedText(
                     text: listSongs[controller.playIndex.value].title,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 15,
-                        color: Colors.white),
+                        color: Theme.of(context).colorScheme.secondary),
                     height: 20,
                     velocity: 35,
                   ),
-                    // child: SizedBox(
-                    //     height: 25,
-                    //     child: Marquee(
-                    //       blankSpace: 35,
-                    //       velocity: 25,
-                    //       style: const TextStyle(
-                    //           color: Colors.white, fontWeight: FontWeight.bold),
-                    //       text: listSongs[controller.playIndex.value].title,
-                    //       fadingEdgeEndFraction: 0.1,
-                    //       fadingEdgeStartFraction: 0.1,
-                    //     ))
                 ),
                 const SizedBox(width: 8.0),
                 Text(
                   "[${listSongs[controller.playIndex.value]
                       .fileExtension
                       .toUpperCase()}]",
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.stop, color: Colors.white),
+                  icon: Icon(Icons.stop, color: Theme.of(context).colorScheme
+                      .secondary),
                   onPressed: () {
                     controller.miniPlayer(false);
                     controller.audioPlayer.pause();
@@ -95,11 +85,12 @@ class MiniPlayer {
         Row(
           children: [
             Text(controller.position.value,
-                style: const TextStyle(color: Colors.white)),
+                style: TextStyle(color: Theme.of(context).colorScheme
+                    .secondary)),
             Expanded(
               child: Slider(
-                  activeColor: Colors.white,
-                  inactiveColor: Colors.grey,
+                  activeColor: Theme.of(context).colorScheme.secondary,
+                  inactiveColor: Theme.of(context).unselectedWidgetColor,
                   min: const Duration(seconds: 0).inSeconds.toDouble(),
                   max: controller.maxDuration.value,
                   value: controller.value.value,
@@ -109,7 +100,8 @@ class MiniPlayer {
                   }),
             ),
             Text(controller.duration.value,
-                style: const TextStyle(color: Colors.white)),
+                style: TextStyle(color: Theme.of(context).colorScheme
+                    .secondary)),
           ],
         ),
       ]),

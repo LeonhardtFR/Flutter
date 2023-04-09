@@ -29,12 +29,14 @@ class AnimatedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // LayoutBuilder to determine how much space we have
     return LayoutBuilder(
       builder: (context, constraints) {
         final span = TextSpan(
           text: text,
           style: style,
         );
+        // TextPainter to simulate the render of the text within the space
         final tp = TextPainter(
           text: span,
           textDirection: TextDirection.ltr,

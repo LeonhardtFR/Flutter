@@ -67,10 +67,10 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
     }
   }
 
-  // @override
+  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: PersistentTabView(
+    return Scaffold(
+      body: PersistentTabView(
         onItemSelected: (index) {
           controlTabPlayer(index);
           if (kDebugMode) {
@@ -82,7 +82,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
         screens: _NavScreens(),
         items: _navBarsItems(),
         confineInSafeArea: true,
-        backgroundColor: Color(0xFF131313),
+        backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
         handleAndroidBackButtonPress: true,
         resizeToAvoidBottomInset: true,
         hideNavigationBarWhenKeyboardShows: true,
@@ -92,7 +92,7 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
         popAllScreensOnTapOfSelectedTab: true,
         navBarStyle: NavBarStyle.style6,
         navBarHeight: 39,
-        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
       ),
     );
   }

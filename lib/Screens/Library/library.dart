@@ -170,14 +170,14 @@ class _LibraryPageState extends State<LibraryPage>
             length: 4,
             initialIndex: libraryController.tabIndex.value,
             child: Scaffold(
-              backgroundColor: Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.background,
               appBar: AppBar(
-                title: const Text('Library'),
-                backgroundColor: Colors.black,
+                title: Text('Library', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
+                backgroundColor: Theme.of(context).colorScheme.background,
                 bottom: TabBar(
-                  unselectedLabelColor: Colors.grey,
-                  labelColor: Colors.white,
-                  indicatorColor: Colors.blueAccent,
+                  unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+                  labelColor: Theme.of(context).colorScheme.secondary,
+                  indicatorColor: Theme.of(context).colorScheme.secondary,
                   indicatorSize: TabBarIndicatorSize.label,
                   controller: tabController,
                   onTap: (int index) {
@@ -197,6 +197,7 @@ class _LibraryPageState extends State<LibraryPage>
                 // Icone de recherche dans l'AppBar
                 actions: [
                   IconButton(
+                    color: Theme.of(context).iconTheme.color,
                     onPressed: () async {
                       SongModel? selectedSong = await showSearch(
                         context: context,
@@ -256,12 +257,12 @@ class _LibraryPageState extends State<LibraryPage>
           )),
           if (listSongs.isNotEmpty)
             Obx(() => Container(
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.background,
                   child: AnimatedSize(
                       duration: const Duration(milliseconds: 500),
                       child: controller.miniPlayer.value
                           ? MiniPlayer().mini(context, tempPath!, listSongs)
-                          : Container(color: Colors.black)),
+                          : Container(color: Theme.of(context).colorScheme.primary,)),
                 )),
         ],
       ),
@@ -310,12 +311,12 @@ class _MusicTabState extends State<MusicTab>
                     ? widget.listSongs[index].title
                     : widget.listSongs[index].displayNameWOExt,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.secondary),
               ),
               subtitle: Text(
                 widget.listSongs[index].artist!,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
               ),
               onTap: () {
                 controller.playMusic(widget.listSongs[index], index);
@@ -379,9 +380,9 @@ class _AlbumsTabState extends State<AlbumsTab>
 
     // Erreur si aucun album trouvé dans le 'storage' du téléphone
     if (widget.albumsList.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('No sound found in the storage',
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
       );
     }
 
@@ -405,11 +406,11 @@ class _AlbumsTabState extends State<AlbumsTab>
               title: Text(
                 widget.albumsList[index],
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.secondary),
               ),
               subtitle: Text(
                 '${widget.albums[widget.albumsList[index]]!.length} songs',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
               ),
               onTap: () {
                 setState(() {
@@ -430,8 +431,8 @@ class _AlbumsTabState extends State<AlbumsTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.black,
+                foregroundColor: Theme.of(context).colorScheme.secondary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 textStyle: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
               setState(() {
@@ -483,7 +484,7 @@ class _AlbumsTabState extends State<AlbumsTab>
                                   .albumListIndex.value]]![index]
                               .displayNameWOExt,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                     ),
                     subtitle: Text(
                       widget
@@ -491,7 +492,7 @@ class _AlbumsTabState extends State<AlbumsTab>
                               libraryController.albumListIndex.value]]![index]
                           .artist!,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
                     ),
                     onTap: () {
                       // print(widget.songs[index].uri);
@@ -558,9 +559,9 @@ class _ArtistsTabTabState extends State<ArtistsTab>
 
     // Erreur si aucun album trouvé dans le 'storage' du téléphone
     if (widget.artistsList.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('No sound found in the storage',
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(color: Theme.of(context).unselectedWidgetColor)),
       );
     }
 
@@ -584,11 +585,11 @@ class _ArtistsTabTabState extends State<ArtistsTab>
               title: Text(
                 widget.artistsList[index],
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.secondary),
               ),
               subtitle: Text(
                 '${widget.artists[widget.artistsList[index]]!.length} songs',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
               ),
               onTap: () {
                 setState(() {
@@ -609,8 +610,8 @@ class _ArtistsTabTabState extends State<ArtistsTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.black,
+                foregroundColor: Theme.of(context).colorScheme.secondary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 textStyle: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
               setState(() {
@@ -662,7 +663,7 @@ class _ArtistsTabTabState extends State<ArtistsTab>
                                   .artistListIndex.value]]![index]
                               .displayNameWOExt,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                     ),
                     subtitle: Text(
                       widget
@@ -670,7 +671,7 @@ class _ArtistsTabTabState extends State<ArtistsTab>
                               libraryController.artistListIndex.value]]![index]
                           .artist!,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
                     ),
                     onTap: () {
                       // print(widget.songs[index].uri);
@@ -738,9 +739,9 @@ class _GenresTabTabState extends State<GenresTab>
 
     // Erreur si aucune musique trouvé dans le 'storage' du téléphone
     if (widget.genresList.isEmpty) {
-      return const Center(
+      return Center(
         child: Text('No sound found in the storage',
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
       );
     }
 
@@ -764,11 +765,11 @@ class _GenresTabTabState extends State<GenresTab>
             title: Text(
               widget.genresList[index],
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
             subtitle: Text(
               '${widget.genres[widget.genresList[index]]!.length} songs',
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),
             onTap: () {
               setState(() {
@@ -789,8 +790,8 @@ class _GenresTabTabState extends State<GenresTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.black,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
                 textStyle: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
               setState(() {
@@ -842,7 +843,7 @@ class _GenresTabTabState extends State<GenresTab>
                           .genreListIndex.value]]![index]
                           .displayNameWOExt,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                     ),
                     subtitle: Text(
                       widget
@@ -850,7 +851,7 @@ class _GenresTabTabState extends State<GenresTab>
                       libraryController.genreListIndex.value]]![index]
                           .genre!,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
                     ),
                     onTap: () {
                       controller.playMusic(

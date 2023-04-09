@@ -1,18 +1,11 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:marquee/marquee.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:osbrosound/ButtonNavigation.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
-import 'package:osbrosound/Screens/Library/library.dart';
-import 'package:osbrosound/Screens/Player/MiniPlayer.dart';
-import 'package:osbrosound/Screens/Player/Player.dart';
 import 'package:osbrosound/Widgets/animated_text.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class Player extends StatefulWidget {
   final List<dynamic> listSongs;
@@ -64,8 +57,17 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: Colors.transparent),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar:
+      AppBar(
+      leading: IconButton(
+      icon: Icon(Icons.arrow_downward, color: Theme.of(context).colorScheme.secondary),
+      onPressed: () {
+        Navigator.pop(context);
+      }
+      ),
+  ),
+
       body: GestureDetector(
         onVerticalDragEnd: (details) {
           if (details.primaryVelocity! > 0) {
@@ -104,14 +106,15 @@ class _PlayerState extends State<Player> {
                 child: Obx(
                   () => Column(
                     children: [
+
                       // TITRE MUSIQUE
                       AnimatedText(
                         text: widget
                             .listSongs[controller.playIndex.value].title,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Theme.of(context).colorScheme.onBackground),
                       ),
                       const SizedBox(height: 16),
 
@@ -119,41 +122,24 @@ class _PlayerState extends State<Player> {
                       AnimatedText(
                         text: widget
                             .listSongs[controller.playIndex.value].title,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 15,
-                            color: Colors.white),
+                            color: Theme.of(context).colorScheme.onBackground),
                         height: 20,
                         velocity: 35,
                       ),
-                      // Container(
-                      //   margin: const EdgeInsets.symmetric(horizontal: 20),
-                      //   height: 20,
-                      //   child: Marquee(
-                      //     text: widget
-                      //         .listSongs[controller.playIndex.value].album
-                      //         .toString(),
-                      //     style: const TextStyle(
-                      //         fontSize: 15, color: Colors.white),
-                      //     scrollAxis: Axis.horizontal,
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     blankSpace: 100.0,
-                      //     velocity: 35.0,
-                      //     fadingEdgeEndFraction: 0.1,
-                      //     fadingEdgeStartFraction: 0.1,
-                      //   ),
-                      // ),
 
                       const SizedBox(height: 75),
 
                       Row(
                         children: [
                           Text(controller.position.value,
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.white)),
+                              style: TextStyle(
+                                  fontSize: 16, color: Theme.of(context).colorScheme.onBackground)),
                           Expanded(
                               child: Slider(
-                                  activeColor: Colors.white,
-                                  inactiveColor: Colors.grey,
+                                  activeColor: Theme.of(context).colorScheme.secondary,
+                                  inactiveColor: Theme.of(context).unselectedWidgetColor,
                                   min: const Duration(seconds: 0)
                                       .inSeconds
                                       .toDouble(),
@@ -165,8 +151,8 @@ class _PlayerState extends State<Player> {
                                     value = value;
                                   })),
                           Text(controller.duration.value,
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.white)),
+                              style: TextStyle(
+                                  fontSize: 16, color: Theme.of(context).colorScheme.onBackground)),
                         ],
                       ),
 
@@ -186,17 +172,14 @@ class _PlayerState extends State<Player> {
                                   print("INFO : list index out of range");
                                 }
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.skip_previous,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onBackground,
                                 size: 36,
                               )),
 
                           IconButton(
                             onPressed: () {
-                              // Navigator.pop(context);
-                              // print(buttonNavigationController.controlTabIndex.value);
-
                               if (controller.isPlaying.value) {
                                 controller.audioPlayer.pause();
                                 controller.isPlaying(false);
@@ -205,14 +188,16 @@ class _PlayerState extends State<Player> {
                                 controller.isPlaying(true);
                               }
                             },
+
                             icon: controller.isPlaying.value
-                                ? const Icon(Icons.pause,
-                                    color: Colors.white, size: 36)
-                                : const Icon(Icons.play_arrow,
-                                    color: Colors.white, size: 36),
+                                ? Icon(Icons.pause,
+                                    color: Theme.of(context).colorScheme
+                                        .secondary, size: 36)
+                                : Icon(Icons.play_arrow,
+                                    color: Theme.of(context).colorScheme
+                                        .secondary, size: 36),
                           ),
 
-                          // IconButton(onPressed: (){}, icon: Icon(Icons.play_arrow, color: Colors.white, size: 36,)),
                           IconButton(
                               onPressed: () {
                                 try {
@@ -224,9 +209,10 @@ class _PlayerState extends State<Player> {
                                   print("INFO : list index out of range");
                                 }
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.skip_next,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme
+                                    .secondary,
                                 size: 36,
                               )),
                         ],
