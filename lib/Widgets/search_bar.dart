@@ -84,6 +84,7 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
     );
   }
 
+  // custom theme
   @override
   ThemeData appBarTheme(BuildContext context) => appBarThemeApp(context);
 }

@@ -6,6 +6,7 @@ import 'package:marquee/marquee.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
+import 'package:osbrosound/Widgets/animated_text.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class MiniPlayer {
@@ -47,15 +48,26 @@ class MiniPlayer {
                       }
                     }),
                 Expanded(
-                    child: SizedBox(
-                        height: 25,
-                        child: Marquee(
-                          blankSpace: 35,
-                          velocity: 25,
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                          text: listSongs[controller.playIndex.value].title,
-                        ))),
+                  child: AnimatedText(
+                    text: listSongs[controller.playIndex.value].title,
+                    style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.white),
+                    height: 20,
+                    velocity: 35,
+                  ),
+                    // child: SizedBox(
+                    //     height: 25,
+                    //     child: Marquee(
+                    //       blankSpace: 35,
+                    //       velocity: 25,
+                    //       style: const TextStyle(
+                    //           color: Colors.white, fontWeight: FontWeight.bold),
+                    //       text: listSongs[controller.playIndex.value].title,
+                    //       fadingEdgeEndFraction: 0.1,
+                    //       fadingEdgeStartFraction: 0.1,
+                    //     ))
+                ),
                 const SizedBox(width: 8.0),
                 Text(
                   "[${listSongs[controller.playIndex.value]

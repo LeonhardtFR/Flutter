@@ -11,6 +11,7 @@ import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Screens/Library/library.dart';
 import 'package:osbrosound/Screens/Player/MiniPlayer.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
+import 'package:osbrosound/Widgets/animated_text.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class Player extends StatefulWidget {
@@ -104,41 +105,43 @@ class _PlayerState extends State<Player> {
                   () => Column(
                     children: [
                       // TITRE MUSIQUE
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        height: 35,
-                        child: Marquee(
-                          text: widget
-                              .listSongs[controller.playIndex.value].title,
-                          style: const TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                          scrollAxis: Axis.horizontal,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          blankSpace: 80.0,
-                          velocity: 25.0,
-                        ),
+                      AnimatedText(
+                        text: widget
+                            .listSongs[controller.playIndex.value].title,
+                        style: const TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
-
                       const SizedBox(height: 16),
 
                       // SOUS TITRE MUSIQUE
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                      AnimatedText(
+                        text: widget
+                            .listSongs[controller.playIndex.value].title,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.white),
                         height: 20,
-                        child: Marquee(
-                          text: widget
-                              .listSongs[controller.playIndex.value].album
-                              .toString(),
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.white),
-                          scrollAxis: Axis.horizontal,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          blankSpace: 100.0,
-                          velocity: 35.0,
-                        ),
+                        velocity: 35,
                       ),
+                      // Container(
+                      //   margin: const EdgeInsets.symmetric(horizontal: 20),
+                      //   height: 20,
+                      //   child: Marquee(
+                      //     text: widget
+                      //         .listSongs[controller.playIndex.value].album
+                      //         .toString(),
+                      //     style: const TextStyle(
+                      //         fontSize: 15, color: Colors.white),
+                      //     scrollAxis: Axis.horizontal,
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     blankSpace: 100.0,
+                      //     velocity: 35.0,
+                      //     fadingEdgeEndFraction: 0.1,
+                      //     fadingEdgeStartFraction: 0.1,
+                      //   ),
+                      // ),
 
                       const SizedBox(height: 75),
 
