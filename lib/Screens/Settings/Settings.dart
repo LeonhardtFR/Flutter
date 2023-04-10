@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:osbrosound/Controllers/settings_controller.dart';
@@ -42,8 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _SingleSection(
                 title: "General",
                 children: [
-                  Obx(
-                        () => _CustomListTile(
+                  Obx(() => _CustomListTile(
                     title: "Dark Mode",
                     icon: CupertinoIcons.moon,
                     trailing: CupertinoSwitch(
@@ -79,9 +77,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   ),
-                  const _CustomListTile(
+                  Obx(
+                        () => _CustomListTile(
                       title: "Storage music",
-                      icon: CupertinoIcons.folder),
+                      icon: CupertinoIcons.folder,
+                    trailing: CupertinoButton(
+                      child: Text(settingsController.songSelectedDirectory.value, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
+                      onPressed: () {
+                        settingsController.getFolderSongs();
+                        settingsController.saveSongFolder(settingsController.songSelectedDirectory.value);
+                      },
+                    ),
+                  ),
+                  ),
                 ],
               ),
 
@@ -106,7 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _CustomListTile(
                       title: "Version",
                       icon: Icons.update,
-                      trailing: Text("0.1.0"),
+                      trailing: Text("0.1.4"),
                   ),
                 ],
               ),

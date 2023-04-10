@@ -7,6 +7,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/libraryController.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
+import 'package:osbrosound/Controllers/settings_controller.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
 import 'package:osbrosound/Services/player_service.dart';
@@ -30,8 +31,10 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
   List<SongModel> listSongs = [];
+  final settingsController = Get.put(SettingsController());
 
   String? tempPath = '/storage/emulated/0/Music';
+  // String? get tempPath => settingsController.songSelectedDirectory.value;
 
   TabController? tabController;
 

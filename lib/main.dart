@@ -12,7 +12,6 @@ import 'package:osbrosound/themes/theme_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Controllers/playerController.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Notification
@@ -23,6 +22,7 @@ Future<void> main() async {
   );
   SettingsController settingsController = Get.put(SettingsController());
   settingsController.themeMode.value = await settingsController.loadTheme();
+  settingsController.songSelectedDirectory.value = await settingsController.loadSongFolder();
   runApp(MyApp());
 }
 
@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    print("Theme index : " + settingsController.themeMode.value.toString());
     return Obx(() => GetMaterialApp(
       title: 'OsbroSound',
       theme: lightAppThemeData,
