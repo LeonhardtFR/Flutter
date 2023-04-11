@@ -22,7 +22,8 @@ Future<void> main() async {
   );
   SettingsController settingsController = Get.put(SettingsController());
   settingsController.themeMode.value = await settingsController.loadTheme();
-  settingsController.songSelectedDirectory.value = await settingsController.loadSongFolder();
+  settingsController.songSelectedDirectory.value =
+      await settingsController.loadSongFolder();
   runApp(MyApp());
 }
 
@@ -32,18 +33,44 @@ class MyApp extends StatelessWidget {
   SettingsController settingsController = Get.put(SettingsController());
   RadioAudioController radioAudioController = Get.put(RadioAudioController());
   PlayerController playerController = Get.put(PlayerController());
-  
+
+  Future<void> checkFirstLaunch() async {
+    print("Checking first launch...");
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('firstLaunch')) {
+      print("First launch detected, setting default values...");
+      await prefs.setBool('firstLaunch', false);
+
+      // On recuperer le theme systeme du telephone au 1er demarrage
+      final darkMode =
+          WidgetsBinding.instance.window.platformBrightness == Brightness.dark;
+      if (darkMode == Brightness.dark) {
+        settingsController.themeMode.value = ThemeMode.dark.index;
+      } else {
+        settingsController.themeMode.value = ThemeMode.light.index;
+      }
+      print("Value: " + settingsController.themeMode.value.toString());
+      await settingsController.saveTheme(settingsController.themeMode.value);
+    } else {
+      settingsController.themeMode.value = await settingsController.loadTheme();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    checkFirstLaunch();
     return Obx(() => GetMaterialApp(
-      title: 'OsbroSound',
-      theme: lightAppThemeData,
-      darkTheme: settingsController.themeMode.value == 1 ? darkAppThemeData : amoledAppThemeData,
-      themeMode: settingsController.themeMode.value == 0 ? ThemeMode.light : ThemeMode.dark,
-      debugShowCheckedModeBanner: false,
-      navigatorObservers: [GetObserver()],
-      home: const ButtonNavigation(),
-    )
-    );
+          title: 'OsbroSound',
+          theme: lightAppThemeData,
+          darkTheme: settingsController.themeMode.value == 1
+              ? darkAppThemeData
+              : amoledAppThemeData,
+          themeMode: settingsController.themeMode.value == 0
+              ? ThemeMode.light
+              : ThemeMode.dark,
+          debugShowCheckedModeBanner: false,
+          navigatorObservers: [GetObserver()],
+          home: const ButtonNavigation(),
+        ));
   }
 }

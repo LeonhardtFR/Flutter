@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,10 +38,10 @@ class SettingsController extends GetxController {
         initialDirectory: "/storage/emulated/0/Music");
     if (selectedDirectory != null) {
       await saveSongFolder(selectedDirectory);
-      songSelectedDirectory.value = selectedDirectory; // on maj la valeur choisi
+      songSelectedDirectory.value =
+          selectedDirectory; // on maj la valeur choisi
     } else {
       print("No folder selected");
     }
   }
-
 }
