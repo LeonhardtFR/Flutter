@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
 
@@ -187,24 +186,4 @@ class OfflineAudioQuery {
       },
     );
   }
-
-//   static Widget offlineArtworkWidget(
-//       {required String artwork, required double size}) {
-//     return Container(
-//       width: size,
-//       height: size,
-//       decoration: BoxDecoration(
-//         borderRadius: BorderRadius.circular(10),
-//         image: DecorationImage(
-//           image: artwork == 'null'
-//               ? const AssetImage('assets/images/album_artwork.png')
-//               : FileImage(
-//                   File(artwork),
-//                 ),
-//           fit: BoxFit.cover,
-//         ),
-//       ),
-//     );
-//   }
-// }) {
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:logger/logger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
@@ -20,6 +21,10 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player> {
   PlayerController controller = Get.find<PlayerController>();
+
+  var logger = Logger(
+    printer: PrettyPrinter(methodCount: 0, lineLength: 1),
+  );
 
   @override
   void dispose() {
@@ -43,14 +48,13 @@ class _PlayerState extends State<Player> {
 
   // lance la musique suivante lorsque la musique en cours est finie
   void _onComplete() {
-    print(controller.value.value);
     try {
       if (controller.maxDuration.value == controller.value.value) {
         controller.playMusic(widget.listSongs[controller.playIndex.value + 1],
             controller.playIndex.value + 1);
       }
     } catch (e) {
-      print("INFO : list index out of range");
+      logger.w("WARNING : list index out of range");
     }
   }
 
@@ -58,16 +62,14 @@ class _PlayerState extends State<Player> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar:
-      AppBar(
-      leading: IconButton(
-      icon: Icon(Icons.arrow_downward, color: Theme.of(context).colorScheme.secondary),
-      onPressed: () {
-        Navigator.pop(context);
-      }
+      appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(Icons.arrow_downward,
+                color: Theme.of(context).colorScheme.secondary),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
       ),
-  ),
-
       body: GestureDetector(
         onVerticalDragEnd: (details) {
           if (details.primaryVelocity! > 0) {
@@ -106,11 +108,10 @@ class _PlayerState extends State<Player> {
                 child: Obx(
                   () => Column(
                     children: [
-
                       // TITRE MUSIQUE
                       AnimatedText(
-                        text: widget
-                            .listSongs[controller.playIndex.value].title,
+                        text:
+                            widget.listSongs[controller.playIndex.value].title,
                         style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
@@ -120,8 +121,8 @@ class _PlayerState extends State<Player> {
 
                       // SOUS TITRE MUSIQUE
                       AnimatedText(
-                        text: widget
-                            .listSongs[controller.playIndex.value].title,
+                        text:
+                            widget.listSongs[controller.playIndex.value].title,
                         style: TextStyle(
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.onBackground),
@@ -135,11 +136,16 @@ class _PlayerState extends State<Player> {
                         children: [
                           Text(controller.position.value,
                               style: TextStyle(
-                                  fontSize: 16, color: Theme.of(context).colorScheme.onBackground)),
+                                  fontSize: 16,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground)),
                           Expanded(
                               child: Slider(
-                                  activeColor: Theme.of(context).colorScheme.secondary,
-                                  inactiveColor: Theme.of(context).unselectedWidgetColor,
+                                  activeColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  inactiveColor:
+                                      Theme.of(context).unselectedWidgetColor,
                                   min: const Duration(seconds: 0)
                                       .inSeconds
                                       .toDouble(),
@@ -152,7 +158,10 @@ class _PlayerState extends State<Player> {
                                   })),
                           Text(controller.duration.value,
                               style: TextStyle(
-                                  fontSize: 16, color: Theme.of(context).colorScheme.onBackground)),
+                                  fontSize: 16,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground)),
                         ],
                       ),
 
@@ -169,15 +178,15 @@ class _PlayerState extends State<Player> {
                                           controller.playIndex.value - 1],
                                       controller.playIndex.value - 1);
                                 } catch (e) {
-                                  print("INFO : list index out of range");
+                                  logger.w("WARNING : list index out of range");
                                 }
                               },
                               icon: Icon(
                                 Icons.skip_previous,
-                                color: Theme.of(context).colorScheme.onBackground,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
                                 size: 36,
                               )),
-
                           IconButton(
                             onPressed: () {
                               if (controller.isPlaying.value) {
@@ -188,16 +197,16 @@ class _PlayerState extends State<Player> {
                                 controller.isPlaying(true);
                               }
                             },
-
                             icon: controller.isPlaying.value
                                 ? Icon(Icons.pause,
-                                    color: Theme.of(context).colorScheme
-                                        .secondary, size: 36)
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    size: 36)
                                 : Icon(Icons.play_arrow,
-                                    color: Theme.of(context).colorScheme
-                                        .secondary, size: 36),
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    size: 36),
                           ),
-
                           IconButton(
                               onPressed: () {
                                 try {
@@ -206,13 +215,12 @@ class _PlayerState extends State<Player> {
                                           controller.playIndex.value + 1],
                                       controller.playIndex.value + 1);
                                 } catch (e) {
-                                  print("INFO : list index out of range");
+                                  logger.w("WARNING : list index out of range");
                                 }
                               },
                               icon: Icon(
                                 Icons.skip_next,
-                                color: Theme.of(context).colorScheme
-                                    .secondary,
+                                color: Theme.of(context).colorScheme.secondary,
                                 size: 36,
                               )),
                         ],
