@@ -15,9 +15,7 @@ import 'package:osbrosound/Services/player_service.dart';
 import 'package:osbrosound/Widgets/search_bar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:logging/logging.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-
 import '../Player/MiniPlayer.dart';
 
 class LibraryPage extends StatefulWidget {
@@ -31,29 +29,13 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
-  List<SongModel> listSongs = [];
+  final libraryController = Get.put(LibraryController());
   final settingsController = Get.put(SettingsController());
 
   String? tempPath = '/storage/emulated/0/Music';
   // String? get tempPath => settingsController.songSelectedDirectory.value;
 
   TabController? tabController;
-
-  // Variable qui va détecter si il y a de la musique dans la librairie
-  OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
-
-  // De base, il ne détecte pas de musique dans la librairie
-  bool musicExist = false;
-
-  List<PlaylistModel> playlistDetails = [];
-
-  Map<String, List<SongModel>> listAlbums = {};
-  Map<String, List<SongModel>> listArtists = {};
-  Map<String, List<SongModel>> listGenres = {};
-
-  List<String> sortedlistAlbums = [];
-  List<String> sortedlistArtists = [];
-  List<String> sortedlistGenres = [];
 
   var logger = Logger(
     printer: PrettyPrinter(methodCount: 0, lineLength: 1),
@@ -62,18 +44,21 @@ class _LibraryPageState extends State<LibraryPage>
   @override
   void initState() {
     super.initState();
+    // libraryController..addListener(() => mounted ? setState(() {}) : null);
+
+    // If libray is installed.listSong list change value, then update the list
+    // libraryController.listSongs.listen((event) {
+    //   setState(() {});
+    // });
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var libraryController = Get.put(LibraryController());
       tabController = TabController(
           length: 4,
           vsync: this,
           initialIndex: libraryController.tabIndex.value);
-      getMusic();
+      libraryController.getMusic();
     });
-  }
-
-  void stateChanged() {
-    setState(() {});
   }
 
   @override
@@ -82,95 +67,12 @@ class _LibraryPageState extends State<LibraryPage>
     tabController!.dispose();
   }
 
-  Future<void> getMusic() async {
-    try {
-      // await Permission.audio.request();
-      // await Permission.storage.request();
-      // await Permission.manageExternalStorage.request();
-      await offlineAudioQuery.requestPermission();
-      // await Permission.storage.request();
-
-      // if(widget.takeAlbum != null) {
-      //   Logger.root.info("User take album from album page");
-      //   listSongs = widget.takeAlbum!;
-      // } else {
-      logger.i("List all songs from library");
-      listSongs = List<SongModel>.from(await offlineAudioQuery.getSongs(
-          sortType: SongSortType.DISPLAY_NAME,
-          orderType: OrderType.ASC_OR_SMALLER,
-          path: settingsController.songSelectedDirectory.value));
-      // }
-    } catch (e) {
-      logger.e("Error while requesting permission: $e");
-    }
-
-    // if (await Permission.storage.isGranted &&
-    //     await Permission.audio.isGranted) {
-    logger.i("Permission granted");
-    var music = await offlineAudioQuery.getSongs();
-
-    if (music.isNotEmpty) {
-      setState(() {
-        musicExist = true;
-      });
-    }
-    getAlbums(listSongs);
-    getArtists(listSongs);
-    getGenres(listSongs);
-  }
-  // }
-
-  Future<void> getAlbums(listSongs) async {
-    for (int i = 0; i < listSongs.length; i++) {
-      try {
-        if (listAlbums.containsKey(listSongs[i].album ?? "Unknown")) {
-          listAlbums[listSongs[i].album ?? "Unknown"]!.add(listSongs[i]);
-        } else {
-          listAlbums[listSongs[i].album ?? "Unknown"] = [listSongs[i]];
-          sortedlistAlbums.add(listSongs[i].album ?? "Unknown");
-        }
-      } catch (e) {
-        logger.e("Error while adding song to album: $e");
-      }
-    }
-  }
-
-  Future<void> getArtists(listSongs) async {
-    for (int i = 0; i < listSongs.length; i++) {
-      try {
-        if (listArtists.containsKey(listSongs[i].artist ?? "Unknown")) {
-          listArtists[listSongs[i].artist ?? "Unknown"]!.add(listSongs[i]);
-        } else {
-          listArtists[listSongs[i].artist ?? "Unknown"] = [listSongs[i]];
-          sortedlistArtists.add(listSongs[i].artist ?? "Unknown");
-        }
-      } catch (e) {
-        logger.e("Error while adding song to artist: $e");
-      }
-    }
-  }
-
-  Future<void> getGenres(listSongs) async {
-    for (int i = 0; i < listSongs.length; i++) {
-      try {
-        if (listGenres.containsKey(listSongs[i].genre ?? "Unknown")) {
-          listGenres[listSongs[i].genre ?? "Unknown"]!.add(listSongs[i]);
-        } else {
-          listGenres[listSongs[i].genre ?? "Unknown"] = [listSongs[i]];
-          sortedlistGenres.add(listSongs[i].genre ?? "Unknown");
-        }
-      } catch (e) {
-        logger.e("Error while adding song to genre: $e");
-      }
-    }
-  }
-
   // WIDGET BUILD MAIN LIBRARY METHOD \\
   @override
   Widget build(BuildContext context) {
     var libraryController = Get.put(LibraryController());
     var controller = Get.put(PlayerController());
-    print(settingsController.songSelectedDirectory.value);
+    print("BUILD LIBRARY");
     return Scaffold(
       body: Column(
         children: [
@@ -212,20 +114,26 @@ class _LibraryPageState extends State<LibraryPage>
                     onPressed: () async {
                       SongModel? selectedSong = await showSearch(
                         context: context,
-                        delegate: SongSearchDelegate(listSongs: listSongs),
+                        delegate: SongSearchDelegate(
+                          listSongs: libraryController.listSongs
+                              .toList()
+                              .cast<SongModel>(),
+                        ),
                       );
 
                       if (selectedSong != null) {
-                        int selectedIndex = listSongs.indexOf(selectedSong);
+                        int selectedIndex =
+                            libraryController.listSongs.indexOf(selectedSong);
                         var controller = Get.put(PlayerController());
                         controller.playMusic(
-                            listSongs[selectedIndex], selectedIndex);
+                            libraryController.listSongs[selectedIndex],
+                            selectedIndex);
 
                         PersistentNavBarNavigator.pushNewScreen(
                           context,
                           screen: Player(
                             tempPath: tempPath!,
-                            listSongs: listSongs,
+                            listSongs: libraryController.listSongs,
                           ),
                           withNavBar: true,
                           pageTransitionAnimation: PageTransitionAnimation.fade,
@@ -238,7 +146,7 @@ class _LibraryPageState extends State<LibraryPage>
                   ),
                 ],
               ),
-              body: !musicExist
+              body: !libraryController.musicExist
                   ? const Center(
                       child: CircularProgressIndicator(),
                       // child: Text('No music found in the storage', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
@@ -246,33 +154,42 @@ class _LibraryPageState extends State<LibraryPage>
                   : TabBarView(
                       controller: tabController,
                       children: [
-                        MusicTab(
-                          listSongs: listSongs,
-                          tempPath: tempPath!,
+                        Obx(
+                          () => MusicTab(
+                            listSongs: libraryController.listSongs
+                                .toList()
+                                .cast<SongModel>(),
+                            tempPath: tempPath!,
+                          ),
                         ),
                         AlbumsTab(
                             tempPath: tempPath!,
-                            albums: listAlbums,
-                            albumsList: sortedlistAlbums),
+                            albums: libraryController.listAlbums,
+                            albumsList: libraryController.sortedlistAlbums),
                         ArtistsTab(
                             tempPath: tempPath!,
-                            artists: listArtists,
-                            artistsList: sortedlistArtists),
+                            artists: libraryController.listArtists,
+                            artistsList: libraryController.sortedlistArtists),
                         GenresTab(
                             tempPath: tempPath!,
-                            genres: listGenres,
-                            genresList: sortedlistGenres),
+                            genres: libraryController.listGenres,
+                            genresList: libraryController.sortedlistGenres),
                       ],
                     ),
             ),
           )),
-          if (listSongs.isNotEmpty)
+          if (libraryController.listSongs.isNotEmpty)
             Obx(() => Container(
                   color: Theme.of(context).colorScheme.background,
                   child: AnimatedSize(
                       duration: const Duration(milliseconds: 500),
                       child: controller.miniPlayer.value
-                          ? MiniPlayer().mini(context, tempPath!, listSongs)
+                          ? MiniPlayer().mini(
+                              context,
+                              tempPath!,
+                              libraryController.listSongs
+                                  .toList()
+                                  .cast<SongModel>())
                           : Container(
                               color: Theme.of(context).colorScheme.primary,
                             )),

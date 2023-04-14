@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Screens/Library/library.dart';
+import 'libraryController.dart';
+
 class SettingsController extends GetxController {
   var amoledMode = false.obs;
 
@@ -33,6 +36,7 @@ class SettingsController extends GetxController {
   }
 
   Future<void> getFolderSongs() async {
+    final libraryController = Get.put(LibraryController());
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath(
         dialogTitle: "Select a folder",
         initialDirectory: "/storage/emulated/0/Music");
@@ -40,6 +44,7 @@ class SettingsController extends GetxController {
       await saveSongFolder(selectedDirectory);
       songSelectedDirectory.value =
           selectedDirectory; // on maj la valeur choisi
+      libraryController.getMusic();
     } else {
       print("No folder selected");
     }
