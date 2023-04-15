@@ -133,6 +133,7 @@ class OfflineAudioQuery {
     bool gaplessPlayback = true,
     Widget? errorWidget,
     Widget? placeholder,
+    void Function(Uint8List)? onImageLoaded,
   }) {
     return FutureBuilder<String>(
       future: queryNSave(
@@ -146,6 +147,10 @@ class OfflineAudioQuery {
       ),
       builder: (context, item) {
         if (item.data != null && item.data!.isNotEmpty) {
+          final File file = File(item.data!);
+          if (onImageLoaded != null) {
+            onImageLoaded(file.readAsBytesSync());
+          }
           return Card(
             elevation: elevation,
             shape: RoundedRectangleBorder(

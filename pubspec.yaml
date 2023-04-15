@@ -45,6 +45,9 @@ dependencies:
   # dateformat + localization
   intl: ^0.18.0
 
+  # generator colors from image
+  palette_generator: ^0.3.3+2
+
 flutter_icons:
   android: true
   ios: true

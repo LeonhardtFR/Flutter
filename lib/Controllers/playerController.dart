@@ -1,9 +1,16 @@
+import 'dart:typed_data';
+import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:palette_generator/palette_generator.dart';
+import 'package:image/image.dart' as img;
+
+
 
 class PlayerController extends GetxController {
   final audioQuery = OnAudioQuery();
@@ -22,6 +29,8 @@ class PlayerController extends GetxController {
   var miniPlayer = false.obs;
 
   var showMiniPlayer = false.obs;
+
+  var backgroundColor = [Colors.black].obs;
 
   @override
   void onInit() {
@@ -76,6 +85,35 @@ class PlayerController extends GetxController {
       checkPermission();
     }
   }
+
+  Future<List<Color>> getDominantColors(Uint8List imageBytes) async {
+    final img.Image image = img.decodeImage(imageBytes)!;
+    final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
+      MemoryImage(imageBytes),
+      size: Size(image.width.toDouble(), image.height.toDouble()),
+      maximumColorCount: 20,
+    );
+
+    Color dominantColor = paletteGenerator.dominantColor?.color ?? Colors.black;
+    PaletteColor? contrastColor;
+
+    for (PaletteColor paletteColor in paletteGenerator.paletteColors) {
+      if (paletteColor.color != dominantColor && paletteColor.color.computeLuminance() > 0.5) {
+        contrastColor = paletteColor;
+        break;
+      }
+    }
+
+    return [
+      dominantColor,
+      contrastColor?.color ?? Colors.white,
+    ];
+  }
+
+
+
+
+
 }
 
 // verifie si la duree est null (si oui retourn 00:00) sinom
