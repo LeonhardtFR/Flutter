@@ -65,7 +65,6 @@ class _LibraryPageState extends State<LibraryPage>
   Widget build(BuildContext context) {
     var libraryController = Get.put(LibraryController());
     var controller = Get.put(PlayerController());
-    print("BUILD LIBRARY");
     return Scaffold(
       body: Column(
         children: [
@@ -148,14 +147,13 @@ class _LibraryPageState extends State<LibraryPage>
                       : TabBarView(
                     controller: tabController,
                     children: [
-                      Obx(
-                            () => MusicTab(
+
+                       MusicTab(
                           listSongs: libraryController.listSongs
                               .toList()
                               .cast<SongModel>(),
                           tempPath: libraryController.tempPath!,
                         ),
-                      ),
                       AlbumsTab(
                           tempPath: libraryController.tempPath!,
                           albums: libraryController.listAlbums,
