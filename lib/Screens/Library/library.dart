@@ -32,7 +32,7 @@ class _LibraryPageState extends State<LibraryPage>
   final libraryController = Get.put(LibraryController());
   final settingsController = Get.put(SettingsController());
 
-  String? tempPath = '/storage/emulated/0/Music';
+  // String? tempPath = '/storage/emulated/0/Music';
 
   TabController? tabController;
 
@@ -126,7 +126,7 @@ class _LibraryPageState extends State<LibraryPage>
                             PersistentNavBarNavigator.pushNewScreen(
                               context,
                               screen: Player(
-                                tempPath: tempPath!,
+                                tempPath: libraryController.tempPath!,
                                 listSongs: libraryController.listSongs,
                               ),
                               withNavBar: true,
@@ -153,19 +153,19 @@ class _LibraryPageState extends State<LibraryPage>
                           listSongs: libraryController.listSongs
                               .toList()
                               .cast<SongModel>(),
-                          tempPath: tempPath!,
+                          tempPath: libraryController.tempPath!,
                         ),
                       ),
                       AlbumsTab(
-                          tempPath: tempPath!,
+                          tempPath: libraryController.tempPath!,
                           albums: libraryController.listAlbums,
                           albumsList: libraryController.sortedlistAlbums),
                       ArtistsTab(
-                          tempPath: tempPath!,
+                          tempPath: libraryController.tempPath!,
                           artists: libraryController.listArtists,
                           artistsList: libraryController.sortedlistArtists),
                       GenresTab(
-                          tempPath: tempPath!,
+                          tempPath: libraryController.tempPath!,
                           genres: libraryController.listGenres,
                           genresList: libraryController.sortedlistGenres),
                     ],
@@ -181,7 +181,7 @@ class _LibraryPageState extends State<LibraryPage>
                   child: controller.miniPlayer.value
                       ? MiniPlayer().mini(
                       context,
-                      tempPath!,
+                      libraryController.tempPath!,
                       libraryController.listSongs
                           .toList()
                           .cast<SongModel>())

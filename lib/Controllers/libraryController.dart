@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/settings_controller.dart';
+import 'package:path_provider/path_provider.dart';
 import '../Helpers/audio_query.dart';
 
 class LibraryController extends GetxController {
@@ -18,6 +19,8 @@ class LibraryController extends GetxController {
   // GENRES VARIABLES
   var genreTab = false.obs;
   var genreListIndex = 0.obs;
+
+  String tempPath = "";
 
   RxList listSongs = [].obs;
   final settingsController = Get.put(SettingsController());
@@ -42,7 +45,9 @@ class LibraryController extends GetxController {
     printer: PrettyPrinter(methodCount: 0, lineLength: 1),
   );
 
+
   Future<void> getMusic() async {
+    tempPath = (await getTemporaryDirectory()).path;
     try {
       // await Permission.audio.request();
       // await Permission.storage.request();

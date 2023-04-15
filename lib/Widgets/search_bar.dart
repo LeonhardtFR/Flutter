@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:osbrosound/Controllers/libraryController.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
@@ -14,6 +15,8 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
   final List<SongModel> listSongs;
 
   SongSearchDelegate({required this.listSongs});
+
+  final libraryController = Get.put(LibraryController());
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -48,7 +51,6 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    String? tempPath = '/storage/emulated/0/Music';
     final suggestions = listSongs
         .where((song) => song.title.toLowerCase().startsWith(query.toLowerCase()))
         .toList();
@@ -64,7 +66,7 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
               id: song.id,
           type: ArtworkType.AUDIO,
           fileName: song.displayNameWOExt,
-          tempPath: tempPath,
+          tempPath: libraryController.tempPath,
           width: 40,
           height: 40,
           ),
@@ -79,7 +81,7 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
               PersistentNavBarNavigator.pushNewScreen(
                 context,
                 screen: Player(
-                  tempPath: tempPath,
+                  tempPath: libraryController.tempPath,
                   listSongs: listSongs,
                 ),
                 withNavBar: true,

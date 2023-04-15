@@ -18,7 +18,7 @@ dependencies:
   permission_handler: ^10.2.0
 #  logging: ^1.1.1
   logger: ^1.3.0
-  path_provider: ^2.0.13
+  path_provider: ^2.0.14
   audio_service: ^0.18.9
   just_audio_background: ^0.0.1-beta.9
   get: ^4.6.5
