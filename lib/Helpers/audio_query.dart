@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class OfflineAudioQuery {
   static OnAudioQuery audioQuery = OnAudioQuery();
@@ -10,6 +11,12 @@ class OfflineAudioQuery {
   Future<void> requestPermission() async {
     while (!await audioQuery.permissionsStatus()) {
       await audioQuery.permissionsRequest();
+    }
+    if (await Permission.storage.isDenied) {
+      await Permission.storage.request();
+    }
+    if (await Permission.audio.isDenied) {
+      await Permission.audio.request();
     }
   }
 

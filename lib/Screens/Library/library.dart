@@ -15,9 +15,7 @@ import 'package:osbrosound/Services/player_service.dart';
 import 'package:osbrosound/Widgets/search_bar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:logging/logging.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-
 import '../Player/MiniPlayer.dart';
 
 class LibraryPage extends StatefulWidget {
@@ -31,29 +29,12 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
-  List<SongModel> listSongs = [];
+  final libraryController = Get.put(LibraryController());
   final settingsController = Get.put(SettingsController());
 
   String? tempPath = '/storage/emulated/0/Music';
-  // String? get tempPath => settingsController.songSelectedDirectory.value;
 
   TabController? tabController;
-
-  // Variable qui va détecter si il y a de la musique dans la librairie
-  OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
-
-  // De base, il ne détecte pas de musique dans la librairie
-  bool musicExist = false;
-
-  List<PlaylistModel> playlistDetails = [];
-
-  Map<String, List<SongModel>> listAlbums = {};
-  Map<String, List<SongModel>> listArtists = {};
-  Map<String, List<SongModel>> listGenres = {};
-
-  List<String> sortedlistAlbums = [];
-  List<String> sortedlistArtists = [];
-  List<String> sortedlistGenres = [];
 
   var logger = Logger(
     printer: PrettyPrinter(methodCount: 0, lineLength: 1),
@@ -62,18 +43,15 @@ class _LibraryPageState extends State<LibraryPage>
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var libraryController = Get.put(LibraryController());
       tabController = TabController(
           length: 4,
           vsync: this,
           initialIndex: libraryController.tabIndex.value);
-      getMusic();
+      libraryController.getMusic();
     });
-  }
-
-  void stateChanged() {
-    setState(() {});
   }
 
   @override
@@ -82,201 +60,135 @@ class _LibraryPageState extends State<LibraryPage>
     tabController!.dispose();
   }
 
-  Future<void> getMusic() async {
-    try {
-      // await Permission.audio.request();
-      // await Permission.storage.request();
-      // await Permission.manageExternalStorage.request();
-      await offlineAudioQuery.requestPermission();
-      // await Permission.storage.request();
-
-      // if(widget.takeAlbum != null) {
-      //   Logger.root.info("User take album from album page");
-      //   listSongs = widget.takeAlbum!;
-      // } else {
-      logger.i("List all songs from library");
-      listSongs = List<SongModel>.from(await offlineAudioQuery.getSongs(
-          sortType: SongSortType.DISPLAY_NAME,
-          orderType: OrderType.ASC_OR_SMALLER,
-          path: settingsController.songSelectedDirectory.value));
-      // }
-    } catch (e) {
-      logger.e("Error while requesting permission: $e");
-    }
-
-    // if (await Permission.storage.isGranted &&
-    //     await Permission.audio.isGranted) {
-    logger.i("Permission granted");
-    var music = await offlineAudioQuery.getSongs();
-
-    if (music.isNotEmpty) {
-      setState(() {
-        musicExist = true;
-      });
-    }
-    getAlbums(listSongs);
-    getArtists(listSongs);
-    getGenres(listSongs);
-  }
-  // }
-
-  Future<void> getAlbums(listSongs) async {
-    for (int i = 0; i < listSongs.length; i++) {
-      try {
-        if (listAlbums.containsKey(listSongs[i].album ?? "Unknown")) {
-          listAlbums[listSongs[i].album ?? "Unknown"]!.add(listSongs[i]);
-        } else {
-          listAlbums[listSongs[i].album ?? "Unknown"] = [listSongs[i]];
-          sortedlistAlbums.add(listSongs[i].album ?? "Unknown");
-        }
-      } catch (e) {
-        logger.e("Error while adding song to album: $e");
-      }
-    }
-  }
-
-  Future<void> getArtists(listSongs) async {
-    for (int i = 0; i < listSongs.length; i++) {
-      try {
-        if (listArtists.containsKey(listSongs[i].artist ?? "Unknown")) {
-          listArtists[listSongs[i].artist ?? "Unknown"]!.add(listSongs[i]);
-        } else {
-          listArtists[listSongs[i].artist ?? "Unknown"] = [listSongs[i]];
-          sortedlistArtists.add(listSongs[i].artist ?? "Unknown");
-        }
-      } catch (e) {
-        logger.e("Error while adding song to artist: $e");
-      }
-    }
-  }
-
-  Future<void> getGenres(listSongs) async {
-    for (int i = 0; i < listSongs.length; i++) {
-      try {
-        if (listGenres.containsKey(listSongs[i].genre ?? "Unknown")) {
-          listGenres[listSongs[i].genre ?? "Unknown"]!.add(listSongs[i]);
-        } else {
-          listGenres[listSongs[i].genre ?? "Unknown"] = [listSongs[i]];
-          sortedlistGenres.add(listSongs[i].genre ?? "Unknown");
-        }
-      } catch (e) {
-        logger.e("Error while adding song to genre: $e");
-      }
-    }
-  }
-
   // WIDGET BUILD MAIN LIBRARY METHOD \\
   @override
   Widget build(BuildContext context) {
     var libraryController = Get.put(LibraryController());
     var controller = Get.put(PlayerController());
-    print(settingsController.songSelectedDirectory.value);
+    print("BUILD LIBRARY");
     return Scaffold(
       body: Column(
         children: [
           Expanded(
-              child: DefaultTabController(
-            length: 4,
-            initialIndex: libraryController.tabIndex.value,
-            child: Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.background,
-              appBar: AppBar(
-                title: Text('Library',
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyLarge!.color)),
-                backgroundColor: Theme.of(context).colorScheme.background,
-                bottom: TabBar(
-                  unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
-                  labelColor: Theme.of(context).colorScheme.secondary,
-                  indicatorColor: Theme.of(context).colorScheme.secondary,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  controller: tabController,
-                  onTap: (int index) {
-                    setState(() {
-                      tabController!.index = index;
-                      libraryController.tabIndex.value = index;
-                    });
-                  },
-                  tabs: const [
-                    Tab(text: 'Songs'),
-                    Tab(text: 'Albums'),
-                    Tab(text: 'Artists'),
-                    Tab(text: 'Genres'),
-                  ],
-                ),
-
-                // Icone de recherche dans l'AppBar
-                actions: [
-                  IconButton(
-                    color: Theme.of(context).iconTheme.color,
-                    onPressed: () async {
-                      SongModel? selectedSong = await showSearch(
-                        context: context,
-                        delegate: SongSearchDelegate(listSongs: listSongs),
-                      );
-
-                      if (selectedSong != null) {
-                        int selectedIndex = listSongs.indexOf(selectedSong);
-                        var controller = Get.put(PlayerController());
-                        controller.playMusic(
-                            listSongs[selectedIndex], selectedIndex);
-
-                        PersistentNavBarNavigator.pushNewScreen(
-                          context,
-                          screen: Player(
-                            tempPath: tempPath!,
-                            listSongs: listSongs,
-                          ),
-                          withNavBar: true,
-                          pageTransitionAnimation: PageTransitionAnimation.fade,
-                        );
-                        controller.miniPlayer(false);
-                        controller.player(true);
-                      }
-                    },
-                    icon: const Icon(Icons.search),
-                  ),
-                ],
-              ),
-              body: !musicExist
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                      // child: Text('No music found in the storage', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
-                    )
-                  : TabBarView(
+              child:  Obx(
+                      () => DefaultTabController(
+                length: 4,
+                initialIndex: libraryController.tabIndex.value,
+                child: Scaffold(
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                  appBar: AppBar(
+                    title: Text('Library',
+                        style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge!.color)),
+                    backgroundColor: Theme.of(context).colorScheme.background,
+                    bottom: TabBar(
+                      unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+                      labelColor: Theme.of(context).colorScheme.secondary,
+                      indicatorColor: Theme.of(context).colorScheme.secondary,
+                      indicatorSize: TabBarIndicatorSize.label,
                       controller: tabController,
-                      children: [
-                        MusicTab(
-                          listSongs: listSongs,
-                          tempPath: tempPath!,
-                        ),
-                        AlbumsTab(
-                            tempPath: tempPath!,
-                            albums: listAlbums,
-                            albumsList: sortedlistAlbums),
-                        ArtistsTab(
-                            tempPath: tempPath!,
-                            artists: listArtists,
-                            artistsList: sortedlistArtists),
-                        GenresTab(
-                            tempPath: tempPath!,
-                            genres: listGenres,
-                            genresList: sortedlistGenres),
+                      onTap: (int index) {
+                        setState(() {
+                          tabController!.index = index;
+                          libraryController.tabIndex.value = index;
+                        });
+                      },
+                      tabs: const [
+                        Tab(text: 'Songs'),
+                        Tab(text: 'Albums'),
+                        Tab(text: 'Artists'),
+                        Tab(text: 'Genres'),
                       ],
                     ),
-            ),
-          )),
-          if (listSongs.isNotEmpty)
+
+                    // Icone de recherche dans l'AppBar
+                    actions: [
+                      IconButton(
+                        color: Theme.of(context).iconTheme.color,
+                        onPressed: () async {
+                          SongModel? selectedSong = await showSearch(
+                            context: context,
+                            delegate: SongSearchDelegate(
+                              listSongs: libraryController.listSongs
+                                  .toList()
+                                  .cast<SongModel>(),
+                            ),
+                          );
+
+                          if (selectedSong != null) {
+                            int selectedIndex =
+                            libraryController.listSongs.indexOf(selectedSong);
+                            var controller = Get.put(PlayerController());
+                            controller.playMusic(
+                                libraryController.listSongs[selectedIndex],
+                                selectedIndex);
+
+                            PersistentNavBarNavigator.pushNewScreen(
+                              context,
+                              screen: Player(
+                                tempPath: tempPath!,
+                                listSongs: libraryController.listSongs,
+                              ),
+                              withNavBar: true,
+                              pageTransitionAnimation: PageTransitionAnimation.fade,
+                            );
+                            controller.miniPlayer(false);
+                            controller.player(true);
+                          }
+                        },
+                        icon: const Icon(Icons.search),
+                      ),
+                    ],
+                  ),
+                  body: !libraryController.musicExist.value
+                      ? const Center(
+                    child: CircularProgressIndicator(),
+                    // child: Text('No music found in the storage', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
+                  )
+                      : TabBarView(
+                    controller: tabController,
+                    children: [
+                      Obx(
+                            () => MusicTab(
+                          listSongs: libraryController.listSongs
+                              .toList()
+                              .cast<SongModel>(),
+                          tempPath: tempPath!,
+                        ),
+                      ),
+                      AlbumsTab(
+                          tempPath: tempPath!,
+                          albums: libraryController.listAlbums,
+                          albumsList: libraryController.sortedlistAlbums),
+                      ArtistsTab(
+                          tempPath: tempPath!,
+                          artists: libraryController.listArtists,
+                          artistsList: libraryController.sortedlistArtists),
+                      GenresTab(
+                          tempPath: tempPath!,
+                          genres: libraryController.listGenres,
+                          genresList: libraryController.sortedlistGenres),
+                    ],
+                  ),
+                ),
+              ),
+              )),
+          if (libraryController.listSongs.isNotEmpty)
             Obx(() => Container(
-                  color: Theme.of(context).colorScheme.background,
-                  child: AnimatedSize(
-                      duration: const Duration(milliseconds: 500),
-                      child: controller.miniPlayer.value
-                          ? MiniPlayer().mini(context, tempPath!, listSongs)
-                          : Container(
-                              color: Theme.of(context).colorScheme.primary,
-                            )),
-                )),
+              color: Theme.of(context).colorScheme.background,
+              child: AnimatedSize(
+                  duration: const Duration(milliseconds: 500),
+                  child: controller.miniPlayer.value
+                      ? MiniPlayer().mini(
+                      context,
+                      tempPath!,
+                      libraryController.listSongs
+                          .toList()
+                          .cast<SongModel>())
+                      : Container(
+                    color: Theme.of(context).colorScheme.primary,
+                  )),
+            )),
         ],
       ),
     );
@@ -414,7 +326,7 @@ class _AlbumsTabState extends State<AlbumsTab>
               type: ArtworkType.AUDIO,
               tempPath: widget.tempPath,
               fileName:
-                  widget.albums[widget.albumsList[index]]![0].displayNameWOExt,
+              widget.albums[widget.albumsList[index]]![0].displayNameWOExt,
             ),
             title: Text(
               widget.albumsList[index],
@@ -446,7 +358,8 @@ class _AlbumsTabState extends State<AlbumsTab>
             style: ElevatedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary,
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                elevation: 0),
             onPressed: () {
               setState(() {
                 libraryController.albumTab(false);
@@ -462,7 +375,7 @@ class _AlbumsTabState extends State<AlbumsTab>
             child: ListView.builder(
               itemCount: widget
                   .albums[widget
-                      .albumsList[libraryController.albumListIndex.value]]!
+                  .albumsList[libraryController.albumListIndex.value]]!
                   .length,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
@@ -472,30 +385,30 @@ class _AlbumsTabState extends State<AlbumsTab>
                     leading: OfflineAudioQuery.offlineArtworkWidget(
                       id: widget
                           .albums[widget.albumsList[
-                              libraryController.albumListIndex.value]]![index]
+                      libraryController.albumListIndex.value]]![index]
                           .id,
                       type: ArtworkType.AUDIO,
                       tempPath: widget.tempPath,
                       fileName: widget
                           .albums[widget.albumsList[
-                              libraryController.albumListIndex.value]]![index]
+                      libraryController.albumListIndex.value]]![index]
                           .displayNameWOExt,
                     ),
                     title: Text(
                       widget
-                                  .albums[widget.albumsList[libraryController
-                                      .albumListIndex.value]]![index]
-                                  .title
-                                  .trim() !=
-                              ''
+                          .albums[widget.albumsList[libraryController
+                          .albumListIndex.value]]![index]
+                          .title
+                          .trim() !=
+                          ''
                           ? widget
-                              .albums[widget.albumsList[libraryController
-                                  .albumListIndex.value]]![index]
-                              .title
+                          .albums[widget.albumsList[libraryController
+                          .albumListIndex.value]]![index]
+                          .title
                           : widget
-                              .albums[widget.albumsList[libraryController
-                                  .albumListIndex.value]]![index]
-                              .displayNameWOExt,
+                          .albums[widget.albumsList[libraryController
+                          .albumListIndex.value]]![index]
+                          .displayNameWOExt,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
@@ -503,7 +416,7 @@ class _AlbumsTabState extends State<AlbumsTab>
                     subtitle: Text(
                       widget
                           .albums[widget.albumsList[
-                              libraryController.albumListIndex.value]]![index]
+                      libraryController.albumListIndex.value]]![index]
                           .artist!,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -512,7 +425,7 @@ class _AlbumsTabState extends State<AlbumsTab>
                     onTap: () {
                       controller.playMusic(
                           widget.albums[widget.albumsList[
-                              libraryController.albumListIndex.value]]![index],
+                          libraryController.albumListIndex.value]]![index],
                           index);
 
                       PersistentNavBarNavigator.pushNewScreen(
@@ -520,7 +433,7 @@ class _AlbumsTabState extends State<AlbumsTab>
                         screen: Player(
                           tempPath: widget.tempPath,
                           listSongs: widget.albums[widget.albumsList[
-                              libraryController.albumListIndex.value]]!,
+                          libraryController.albumListIndex.value]]!,
                         ),
                         withNavBar: true,
                         pageTransitionAnimation: PageTransitionAnimation.fade,
@@ -626,7 +539,8 @@ class _ArtistsTabTabState extends State<ArtistsTab>
             style: ElevatedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary,
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                elevation: 0),
             onPressed: () {
               setState(() {
                 libraryController.artistTab(false);
@@ -642,7 +556,7 @@ class _ArtistsTabTabState extends State<ArtistsTab>
             child: ListView.builder(
               itemCount: widget
                   .artists[widget
-                      .artistsList[libraryController.artistListIndex.value]]!
+                  .artistsList[libraryController.artistListIndex.value]]!
                   .length,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
@@ -652,30 +566,30 @@ class _ArtistsTabTabState extends State<ArtistsTab>
                     leading: OfflineAudioQuery.offlineArtworkWidget(
                       id: widget
                           .artists[widget.artistsList[
-                              libraryController.artistListIndex.value]]![index]
+                      libraryController.artistListIndex.value]]![index]
                           .id,
                       type: ArtworkType.AUDIO,
                       tempPath: widget.tempPath,
                       fileName: widget
                           .artists[widget.artistsList[
-                              libraryController.artistListIndex.value]]![index]
+                      libraryController.artistListIndex.value]]![index]
                           .displayNameWOExt,
                     ),
                     title: Text(
                       widget
-                                  .artists[widget.artistsList[libraryController
-                                      .artistListIndex.value]]![index]
-                                  .title
-                                  .trim() !=
-                              ''
+                          .artists[widget.artistsList[libraryController
+                          .artistListIndex.value]]![index]
+                          .title
+                          .trim() !=
+                          ''
                           ? widget
-                              .artists[widget.artistsList[libraryController
-                                  .artistListIndex.value]]![index]
-                              .title
+                          .artists[widget.artistsList[libraryController
+                          .artistListIndex.value]]![index]
+                          .title
                           : widget
-                              .artists[widget.artistsList[libraryController
-                                  .artistListIndex.value]]![index]
-                              .displayNameWOExt,
+                          .artists[widget.artistsList[libraryController
+                          .artistListIndex.value]]![index]
+                          .displayNameWOExt,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
@@ -683,7 +597,7 @@ class _ArtistsTabTabState extends State<ArtistsTab>
                     subtitle: Text(
                       widget
                           .artists[widget.artistsList[
-                              libraryController.artistListIndex.value]]![index]
+                      libraryController.artistListIndex.value]]![index]
                           .artist!,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -692,7 +606,7 @@ class _ArtistsTabTabState extends State<ArtistsTab>
                     onTap: () {
                       controller.playMusic(
                           widget.artists[widget.artistsList[
-                              libraryController.artistListIndex.value]]![index],
+                          libraryController.artistListIndex.value]]![index],
                           index);
 
                       PersistentNavBarNavigator.pushNewScreen(
@@ -700,7 +614,7 @@ class _ArtistsTabTabState extends State<ArtistsTab>
                         screen: Player(
                           tempPath: widget.tempPath,
                           listSongs: widget.artists[widget.artistsList[
-                              libraryController.artistListIndex.value]]!,
+                          libraryController.artistListIndex.value]]!,
                         ),
                         withNavBar: true,
                         pageTransitionAnimation: PageTransitionAnimation.fade,
@@ -775,7 +689,7 @@ class _GenresTabTabState extends State<GenresTab>
               type: ArtworkType.AUDIO,
               tempPath: widget.tempPath,
               fileName:
-                  widget.genres[widget.genresList[index]]![0].displayNameWOExt,
+              widget.genres[widget.genresList[index]]![0].displayNameWOExt,
             ),
             title: Text(
               widget.genresList[index],
@@ -805,9 +719,10 @@ class _GenresTabTabState extends State<GenresTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                foregroundColor: Theme.of(context).colorScheme.secondary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+            elevation: 0),
             onPressed: () {
               setState(() {
                 libraryController.genreTab(false);
@@ -823,7 +738,7 @@ class _GenresTabTabState extends State<GenresTab>
             child: ListView.builder(
               itemCount: widget
                   .genres[widget
-                      .genresList[libraryController.genreListIndex.value]]!
+                  .genresList[libraryController.genreListIndex.value]]!
                   .length,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
@@ -833,30 +748,30 @@ class _GenresTabTabState extends State<GenresTab>
                     leading: OfflineAudioQuery.offlineArtworkWidget(
                       id: widget
                           .genres[widget.genresList[
-                              libraryController.genreListIndex.value]]![index]
+                      libraryController.genreListIndex.value]]![index]
                           .id,
                       type: ArtworkType.AUDIO,
                       tempPath: widget.tempPath,
                       fileName: widget
                           .genres[widget.genresList[
-                              libraryController.genreListIndex.value]]![index]
+                      libraryController.genreListIndex.value]]![index]
                           .displayNameWOExt,
                     ),
                     title: Text(
                       widget
-                                  .genres[widget.genresList[libraryController
-                                      .genreListIndex.value]]![index]
-                                  .title
-                                  .trim() !=
-                              ''
+                          .genres[widget.genresList[libraryController
+                          .genreListIndex.value]]![index]
+                          .title
+                          .trim() !=
+                          ''
                           ? widget
-                              .genres[widget.genresList[libraryController
-                                  .genreListIndex.value]]![index]
-                              .title
+                          .genres[widget.genresList[libraryController
+                          .genreListIndex.value]]![index]
+                          .title
                           : widget
-                              .genres[widget.genresList[libraryController
-                                  .genreListIndex.value]]![index]
-                              .displayNameWOExt,
+                          .genres[widget.genresList[libraryController
+                          .genreListIndex.value]]![index]
+                          .displayNameWOExt,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary),
@@ -864,7 +779,7 @@ class _GenresTabTabState extends State<GenresTab>
                     subtitle: Text(
                       widget
                           .genres[widget.genresList[
-                              libraryController.genreListIndex.value]]![index]
+                      libraryController.genreListIndex.value]]![index]
                           .genre!,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -873,7 +788,7 @@ class _GenresTabTabState extends State<GenresTab>
                     onTap: () {
                       controller.playMusic(
                           widget.genres[widget.genresList[
-                              libraryController.genreListIndex.value]]![index],
+                          libraryController.genreListIndex.value]]![index],
                           index);
 
                       PersistentNavBarNavigator.pushNewScreen(
@@ -881,7 +796,7 @@ class _GenresTabTabState extends State<GenresTab>
                         screen: Player(
                           tempPath: widget.tempPath,
                           listSongs: widget.genres[widget.genresList[
-                              libraryController.genreListIndex.value]]!,
+                          libraryController.genreListIndex.value]]!,
                         ),
                         withNavBar: true,
                         pageTransitionAnimation: PageTransitionAnimation.fade,

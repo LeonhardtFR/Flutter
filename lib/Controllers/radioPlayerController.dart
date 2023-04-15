@@ -15,7 +15,7 @@ class RadioAudioController extends GetxController {
           id: url,
           album: "Bankable Radio",
           title: "Live Stream",
-          artUri: Uri.parse("https://example.com/cover_art.jpg"));
+          artUri: Uri.parse("https://bankableradio.com/wp-content/uploads/2021/03/BR-Logo-1.png"));
 
       // Configurez l'AudioSource avec l'objet MediaItem
       await _audioPlayer.setAudioSource(

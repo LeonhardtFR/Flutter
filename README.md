@@ -11,7 +11,7 @@ Music audio player application
 ## Made with
 
 * [Flutter](https://flutter.dev/) - Framework
-* [Dart](https://dart.dev/) - language
+* [Dart](https://dart.dev/) - Language
 
 ## Contributing
 

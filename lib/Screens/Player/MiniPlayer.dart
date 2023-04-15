@@ -15,7 +15,7 @@ class MiniPlayer {
     return Container(
       key: const Key('miniPlayer'),
       padding: const EdgeInsets.only(
-          bottom: 30.0, top: 0, left: 12.5, right: 12.5),
+          bottom: 30.0, top: 10, left: 12.5, right: 12.5),
       color: Theme.of(context).colorScheme.onSecondaryContainer,
       child: Column(children: [
         GestureDetector(
