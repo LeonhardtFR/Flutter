@@ -86,12 +86,9 @@ class PlayerController extends GetxController {
     }
   }
 
-  Future<List<Color>> getDominantColors(Uint8List imageBytes) async {
-    final img.Image image = img.decodeImage(imageBytes)!;
+  Future<List<Color>> getDominantColors(ImageProvider imageProvider) async {
     final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
-      MemoryImage(imageBytes),
-      size: Size(image.width.toDouble(), image.height.toDouble()),
-      maximumColorCount: 20,
+      imageProvider,
     );
 
     Color dominantColor = paletteGenerator.dominantColor?.color ?? Colors.black;
@@ -106,7 +103,7 @@ class PlayerController extends GetxController {
 
     return [
       dominantColor,
-      contrastColor?.color ?? Colors.white,
+      contrastColor?.color ?? Colors.black,
     ];
   }
 

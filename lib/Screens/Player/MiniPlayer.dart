@@ -11,7 +11,6 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class MiniPlayer {
   mini(BuildContext context, String tempPath, List<SongModel> listSongs) {
-    print("OKKKKK");
     var controller = Get.find<PlayerController>();
     return Container(
       key: const Key('miniPlayer'),

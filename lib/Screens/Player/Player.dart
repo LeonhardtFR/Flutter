@@ -63,7 +63,6 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
-    logger.d(controller.backgroundColor.value);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -98,9 +97,10 @@ class _PlayerState extends State<Player> {
                           tempPath: widget.tempPath,
                           width: 350,
                           height: 350,
-                          onImageLoaded: (imageBytes) async {
+                          filterQuality: FilterQuality.high,
+                          onImageLoaded: (image) async {
                             controller.backgroundColor.value =
-                                await controller.getDominantColors(imageBytes);
+                                await controller.getDominantColors(image);
                           },
                         ),
                       ),

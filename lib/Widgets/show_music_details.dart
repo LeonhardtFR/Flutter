@@ -11,7 +11,7 @@ class ShowMusicDetails {
     PlayerController playerController = Get.find<PlayerController>();
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext bc) {
+      builder: (BuildContext context) {
         return Container(
           color: Theme
               .of(context)
