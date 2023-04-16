@@ -152,18 +152,18 @@ class _LibraryPageState extends State<LibraryPage>
                           listSongs: libraryController.listSongs
                               .toList()
                               .cast<SongModel>(),
-                          tempPath: libraryController.tempPath!,
+                          tempPath: libraryController.tempPath,
                         ),
                       AlbumsTab(
-                          tempPath: libraryController.tempPath!,
+                          tempPath: libraryController.tempPath,
                           albums: libraryController.listAlbums,
                           albumsList: libraryController.sortedlistAlbums),
                       ArtistsTab(
-                          tempPath: libraryController.tempPath!,
+                          tempPath: libraryController.tempPath,
                           artists: libraryController.listArtists,
                           artistsList: libraryController.sortedlistArtists),
                       GenresTab(
-                          tempPath: libraryController.tempPath!,
+                          tempPath: libraryController.tempPath,
                           genres: libraryController.listGenres,
                           genresList: libraryController.sortedlistGenres),
                     ],
@@ -171,22 +171,28 @@ class _LibraryPageState extends State<LibraryPage>
                 ),
               ),
               )),
-          if (libraryController.listSongs.isNotEmpty)
-            Obx(() => Container(
-              color: Theme.of(context).colorScheme.background,
-              child: AnimatedSize(
+          Obx(() {
+            if (libraryController.listSongs.isNotEmpty) {
+              return Container(
+                color: Theme.of(context).colorScheme.background,
+                child: AnimatedSize(
                   duration: const Duration(milliseconds: 500),
                   child: controller.miniPlayer.value
                       ? MiniPlayer().mini(
                       context,
-                      libraryController.tempPath!,
+                      libraryController.tempPath,
                       libraryController.listSongs
                           .toList()
                           .cast<SongModel>())
                       : Container(
                     color: Theme.of(context).colorScheme.primary,
-                  )),
-            )),
+                  ),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink(); // "boite vide" + opti qu'un container ou un sizedbox classique
+            }
+          }),
         ],
       ),
     );

@@ -30,6 +30,8 @@ class PlayerController extends GetxController {
 
   var showMiniPlayer = false.obs;
 
+  var lastPlayedIndex = -1.obs;
+
   var backgroundColor = [Colors.black, Colors.black].obs;
 
   @override

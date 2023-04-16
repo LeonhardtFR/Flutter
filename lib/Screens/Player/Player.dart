@@ -41,25 +41,24 @@ class _PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
-    controller.audioPlayer.playerStateStream.listen((playerState) {
-      if (playerState.processingState == ProcessingState.completed) {
+    controller.audioPlayer.positionStream.listen((position) { // détecter la fin de la lecture en cours
+      if (position >= controller.audioPlayer.duration!) { // verifie si la position de la musique en cours est égal/sup à la durée de la musique
         _onComplete();
-        // controller.playIndex.value + 1;
       }
     });
   }
 
-  // lance la musique suivante lorsque la musique en cours est finie
+// lance la musique suivante lorsque la musique en cours est finie
   void _onComplete() {
     try {
-      if (controller.maxDuration.value == controller.value.value) {
-        controller.playMusic(widget.listSongs[controller.playIndex.value + 1],
-            controller.playIndex.value + 1);
-      }
+      controller.playMusic(
+          widget.listSongs[controller.playIndex.value + 1],
+          controller.playIndex.value + 1);
     } catch (e) {
       logger.w("WARNING : list index out of range");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
