@@ -30,7 +30,7 @@ class PlayerController extends GetxController {
 
   var showMiniPlayer = false.obs;
 
-  var backgroundColor = [Colors.black].obs;
+  var backgroundColor = [Colors.black, Colors.black].obs;
 
   @override
   void onInit() {

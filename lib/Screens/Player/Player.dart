@@ -7,6 +7,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Widgets/animated_text.dart';
+import 'package:osbrosound/Widgets/background_container.dart';
 import 'package:osbrosound/Widgets/show_music_details.dart';
 
 class Player extends StatefulWidget {
@@ -62,6 +63,7 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
+    logger.d(controller.backgroundColor.value);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -71,14 +73,7 @@ class _PlayerState extends State<Player> {
               Navigator.pop(context);
             }),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: controller.backgroundColor.value,
-          ),
-        ),
+      body: BackgroundContainer(
         child: GestureDetector(
           onVerticalDragEnd: (details) {
             if (details.primaryVelocity! > 0) {
@@ -88,10 +83,11 @@ class _PlayerState extends State<Player> {
           child: Column(
             children: [
               Expanded(
-                child: Obx(
-                      () => Stack(
+                child: Stack(
                     alignment: Alignment.center,
                     children: [
+                    Obx(
+                    () =>
                       Container(
                         alignment: Alignment.center,
                         child: OfflineAudioQuery.offlineArtworkWidget(
@@ -108,8 +104,10 @@ class _PlayerState extends State<Player> {
                           },
                         ),
                       ),
+                  ),
+                      // On positionne le bouton "info" en bas à droite de la pochette de maniere Fixe
                       Positioned(
-                        bottom: 20,
+                        bottom: 10,
                         right: 35,
                         child: Container(
                           width: 40,
@@ -128,7 +126,7 @@ class _PlayerState extends State<Player> {
                     ],
                   ),
                 ),
-              ),
+
               const SizedBox(height: 16),
               Expanded(
                 child: Container(

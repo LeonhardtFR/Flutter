@@ -46,7 +46,7 @@ class ShowMusicDetails {
                     song.fileExtension.toUpperCase()),
               ),
               ListTile(
-                title: const Text('Storange Path'),
+                title: const Text('Storage Path'),
                 subtitle: Text(
                     song.data),
               ),
