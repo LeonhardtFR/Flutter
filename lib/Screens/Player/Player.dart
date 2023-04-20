@@ -10,6 +10,7 @@ import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Widgets/animated_text.dart';
 import 'package:osbrosound/Widgets/background_container.dart';
 import 'package:osbrosound/Widgets/show_music_details.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Player extends StatefulWidget {
   final List<dynamic> listSongs;
@@ -28,6 +29,7 @@ class Player extends StatefulWidget {
 class _PlayerState extends State<Player> {
   PlayerController controller = Get.find<PlayerController>();
   ShowMusicDetails showMusicDetails = ShowMusicDetails();
+  final PanelController _panelController = PanelController();
 
   var logger = Logger(
     printer: PrettyPrinter(methodCount: 0, lineLength: 1),
@@ -73,7 +75,10 @@ class _PlayerState extends State<Player> {
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(Icons.arrow_downward,
-                color: Theme.of(context).colorScheme.secondary),
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .secondary),
             onPressed: () {
               Navigator.pop(context);
             }),
@@ -92,25 +97,28 @@ class _PlayerState extends State<Player> {
                   alignment: Alignment.center,
                   children: [
                     Obx(
-                      () => Container(
-                        alignment: Alignment.center,
-                        child: OfflineAudioQuery.offlineArtworkWidget(
-                          id: widget.listSongs[controller.playIndex.value].id,
-                          type: ArtworkType.AUDIO,
-                          fileName: widget.listSongs[controller.playIndex.value]
-                              .displayNameWOExt,
-                          tempPath: widget.tempPath,
-                          width: 350,
-                          height: 350,
-                          filterQuality: FilterQuality.high,
-                          onImageLoaded: (image) async {
-                            controller.backgroundColor.value =
+                          () =>
+                          Container(
+                            alignment: Alignment.center,
+                            child: OfflineAudioQuery.offlineArtworkWidget(
+                              id: widget.listSongs[controller.playIndex.value]
+                                  .id,
+                              type: ArtworkType.AUDIO,
+                              fileName: widget.listSongs[controller.playIndex
+                                  .value]
+                                  .displayNameWOExt,
+                              tempPath: widget.tempPath,
+                              width: 350,
+                              height: 350,
+                              filterQuality: FilterQuality.high,
+                              onImageLoaded: (image) async {
+                                controller.backgroundColor.value =
                                 await controller.getDominantColors(image);
-                          },
-                        ),
-                      ),
+                              },
+                            ),
+                          ),
                     ),
-                    // On positionne le bouton "info" en bas à droite de la pochette de maniere Fixe
+                    // on positionne le bouton "info" en bas à droite de la pochette de maniere Fixe
                     Positioned(
                       bottom: 10,
                       right: 35,
@@ -141,138 +149,284 @@ class _PlayerState extends State<Player> {
                   decoration: const BoxDecoration(
                     color: Colors.transparent,
                     borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16)),
+                    BorderRadius.vertical(top: Radius.circular(16)),
                   ),
-                  child: Obx(
-                    () => Column(
-                      children: [
-                        // TITRE MUSIQUE
-                        AnimatedText(
-                          text: widget
-                              .listSongs[controller.playIndex.value].title,
-                          style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).colorScheme.onBackground),
+                  child: Stack(
+                    children: [
+                      SingleChildScrollView(
+                        child: Obx(
+                              () =>
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // TITRE MUSIQUE
+                                  AnimatedText(
+                                    text: widget
+                                        .listSongs[controller.playIndex.value]
+                                        .title,
+                                    style: TextStyle(
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                        Theme
+                                            .of(context)
+                                            .colorScheme
+                                            .onBackground),
+                                  ),
+                                  const SizedBox(height: 16),
+
+                                  // SOUS TITRE MUSIQUE
+                                  AnimatedText(
+                                    text: widget
+                                        .listSongs[controller.playIndex.value]
+                                        .title,
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color:
+                                        Theme
+                                            .of(context)
+                                            .colorScheme
+                                            .onBackground),
+                                    height: 20,
+                                    velocity: 35,
+                                  ),
+
+                                  const SizedBox(height: 75),
+
+                                  Row(
+                                    children: [
+                                      Text(controller.position.value,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Theme
+                                                  .of(context)
+                                                  .colorScheme
+                                                  .onBackground)),
+                                      Expanded(
+                                          child: Slider(
+                                              activeColor:
+                                              Theme
+                                                  .of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              inactiveColor:
+                                              Theme
+                                                  .of(context)
+                                                  .unselectedWidgetColor,
+                                              min: const Duration(seconds: 0)
+                                                  .inSeconds
+                                                  .toDouble(),
+                                              max: controller.maxDuration.value,
+                                              value: controller.value.value,
+                                              onChanged: (value) {
+                                                controller
+                                                    .changeDurationToSeconds(
+                                                    value.toInt());
+                                                value = value;
+                                              })),
+                                      Text(controller.duration.value,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Theme
+                                                  .of(context)
+                                                  .colorScheme
+                                                  .onBackground)),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .spaceEvenly,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            // Je passe à la musique précédente dans la liste
+                                            try {
+                                              controller.playMusic(
+                                                  widget.listSongs[
+                                                  controller.playIndex.value -
+                                                      1],
+                                                  controller.playIndex.value -
+                                                      1);
+                                            } catch (e) {
+                                              logger
+                                                  .w(
+                                                  "WARNING : list index out of range");
+                                            }
+                                          },
+                                          icon: Icon(
+                                            Icons.skip_previous,
+                                            color: Theme
+                                                .of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                            size: 36,
+                                          )),
+                                      IconButton(
+                                        onPressed: () {
+                                          if (controller.isPlaying.value) {
+                                            controller.audioPlayer.pause();
+                                            controller.isPlaying(false);
+                                          } else {
+                                            controller.audioPlayer.play();
+                                            controller.isPlaying(true);
+                                          }
+                                        },
+                                        icon: controller.isPlaying.value
+                                            ? Icon(Icons.pause,
+                                            color: Theme
+                                                .of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: 36)
+                                            : Icon(Icons.play_arrow,
+                                            color: Theme
+                                                .of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: 36),
+                                      ),
+                                      IconButton(
+                                          onPressed: () {
+                                            try {
+                                              controller.playMusic(
+                                                  widget.listSongs[
+                                                  controller.playIndex.value +
+                                                      1],
+                                                  controller.playIndex.value +
+                                                      1);
+                                            } catch (e) {
+                                              logger
+                                                  .w(
+                                                  "WARNING : list index out of range");
+                                            }
+                                          },
+                                          icon: Icon(
+                                            Icons.skip_next,
+                                            color:
+                                            Theme
+                                                .of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: 36,
+                                          )),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 16),
+
+                                  IconButton(
+                                    onPressed: () {
+                                      if (_panelController.isPanelClosed) {
+                                        _panelController.open();
+                                      } else {
+                                        _panelController.close();
+                                      }
+                                    },
+                                    icon: Icon(
+                                      Icons.menu,
+                                      // Changer l'icône selon vos préférences
+                                      color: Theme
+                                          .of(context)
+                                          .colorScheme
+                                          .onBackground,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ],
+                              ),
                         ),
-                        const SizedBox(height: 16),
+                      ),
 
-                        // SOUS TITRE MUSIQUE
-                        AnimatedText(
-                          text: widget
-                              .listSongs[controller.playIndex.value].title,
-                          style: TextStyle(
-                              fontSize: 15,
-                              color:
-                                  Theme.of(context).colorScheme.onBackground),
-                          height: 20,
-                          velocity: 35,
-                        ),
-
-                        const SizedBox(height: 75),
-
-                        Row(
-                          children: [
-                            Text(controller.position.value,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground)),
-                            Expanded(
-                                child: Slider(
-                                    activeColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    inactiveColor:
-                                        Theme.of(context).unselectedWidgetColor,
-                                    min: const Duration(seconds: 0)
-                                        .inSeconds
-                                        .toDouble(),
-                                    max: controller.maxDuration.value,
-                                    value: controller.value.value,
-                                    onChanged: (value) {
-                                      controller.changeDurationToSeconds(
-                                          value.toInt());
-                                      value = value;
-                                    })),
-                            Text(controller.duration.value,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground)),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  // Je passe à la musique précédente dans la liste
-                                  try {
-                                    controller.playMusic(
-                                        widget.listSongs[
-                                            controller.playIndex.value - 1],
-                                        controller.playIndex.value - 1);
-                                  } catch (e) {
-                                    logger
-                                        .w("WARNING : list index out of range");
-                                  }
-                                },
-                                icon: Icon(
-                                  Icons.skip_previous,
-                                  color: Theme.of(context)
+                      SlidingUpPanel(
+                        controller: _panelController,
+                        maxHeight: MediaQuery
+                            .of(context)
+                            .size
+                            .height * 0.4,
+                        minHeight: 0,
+                        panel: Container(
+                          decoration: BoxDecoration(
+                            color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 16),
+                              Container(
+                                width: 50,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: Theme
+                                      .of(context)
                                       .colorScheme
                                       .onBackground,
-                                  size: 36,
-                                )),
-                            IconButton(
-                              onPressed: () {
-                                if (controller.isPlaying.value) {
-                                  controller.audioPlayer.pause();
-                                  controller.isPlaying(false);
-                                } else {
-                                  controller.audioPlayer.play();
-                                  controller.isPlaying(true);
-                                }
-                              },
-                              icon: controller.isPlaying.value
-                                  ? Icon(Icons.pause,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      size: 36)
-                                  : Icon(Icons.play_arrow,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      size: 36),
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  try {
-                                    controller.playMusic(
-                                        widget.listSongs[
-                                            controller.playIndex.value + 1],
-                                        controller.playIndex.value + 1);
-                                  } catch (e) {
-                                    logger
-                                        .w("WARNING : list index out of range");
-                                  }
-                                },
-                                icon: Icon(
-                                  Icons.skip_next,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  size: 36,
-                                )),
-                          ],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: widget.listSongs.length,
+                                  itemBuilder: (context, index) {
+                                    return Obx(
+                                          () =>
+                                          ListTile(
+                                            onTap: () {
+                                              controller.playMusic(
+                                                  widget.listSongs[index],
+                                                  index);
+                                            },
+                                            leading: OfflineAudioQuery
+                                                .offlineArtworkWidget(
+                                              id: widget.listSongs[index].id,
+                                              type: ArtworkType.AUDIO,
+                                              fileName: widget.listSongs[index]
+                                                  .displayNameWOExt,
+                                              tempPath: widget.tempPath,
+                                              width: 50,
+                                              height: 50,
+                                              filterQuality: FilterQuality.high,
+                                            ),
+                                            title: Text(
+                                              widget.listSongs[index].title,
+                                              style: TextStyle(
+                                                  color: Theme
+                                                      .of(context)
+                                                      .colorScheme
+                                                      .onBackground),
+                                            ),
+                                            subtitle: Text(
+                                              widget.listSongs[index].artist,
+                                              style: TextStyle(
+                                                  color: Theme
+                                                      .of(context)
+                                                      .colorScheme
+                                                      .onBackground),
+                                            ),
+                                            trailing: controller.playIndex
+                                                .value == index
+                                                ? Icon(
+                                              Icons.play_arrow,
+                                              color: Theme
+                                                  .of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            )
+                                                : null,
+                                          ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
+                      )
+                    ],
                   ),
                 ),
               ),

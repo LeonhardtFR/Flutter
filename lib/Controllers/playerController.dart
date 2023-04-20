@@ -6,12 +6,15 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:osbrosound/Controllers/radioPlayerController.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:image/image.dart' as img;
 
 class PlayerController extends GetxController
     with SingleGetTickerProviderMixin {
+  RadioAudioController radioAudioController = Get.find<RadioAudioController>();
+
   final audioQuery = OnAudioQuery();
   final audioPlayer = AudioPlayer();
 
@@ -77,6 +80,7 @@ class PlayerController extends GetxController
     playIndex.value = index;
     Uri uriSong = Uri.parse(songs.uri.toString());
     try {
+      radioAudioController.stopRadio();
       audioPlayer.setAudioSource(AudioSource.uri(uriSong,
           tag: MediaItem(
               id: songs.id.toString(),

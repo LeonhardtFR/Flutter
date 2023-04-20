@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Controllers/radioPlayerController.dart';
 import 'dart:convert';
 
@@ -18,6 +19,7 @@ class _RadioScreenState extends State<RadioScreen> {
       text: 'https://listen.radioking.com/radio/242578/stream/286663');
 
   final RadioAudioController radioAudioController = Get.put(RadioAudioController());
+  PlayerController playerController = Get.find<PlayerController>();
 
   final StreamController<Map<String, dynamic>> _metadataController =
   StreamController<Map<String, dynamic>>.broadcast();
@@ -126,6 +128,7 @@ class _RadioScreenState extends State<RadioScreen> {
         onPressed: () async {
         radioAudioController.isPlaying.value = !radioAudioController.isPlaying.value;
       if (radioAudioController.isPlaying.value) {
+        playerController.stopPlayer();
         _startMetadataUpdates();
         await radioAudioController.playRadio(controllerUrl.text);
       } else {

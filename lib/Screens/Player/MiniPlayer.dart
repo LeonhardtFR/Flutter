@@ -13,7 +13,7 @@ class MiniPlayer {
   mini(BuildContext context, String tempPath, List<SongModel> listSongs) {
     var controller = Get.find<PlayerController>();
     return Container(
-      key: const Key('miniPlayer'),
+      // key: const Key('miniPlayer'),
       padding:
           const EdgeInsets.only(bottom: 30.0, top: 10, left: 12.5, right: 12.5),
       color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -27,24 +27,13 @@ class MiniPlayer {
                   tempPath: tempPath,
                   listSongs: listSongs,
                 ),
-                transitionDuration: const Duration(milliseconds: 300),
-                transitionsBuilder: (_, a, __, c) => SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0.0, 1.0),
-                    end: Offset.zero,
-                  ).animate(a),
+                transitionDuration: const Duration(milliseconds: 500),
+                transitionsBuilder: (_, a, __, c) => FadeTransition(
+                  opacity: a,
                   child: c,
                 ),
-
-                // FadeTransition(opacity: a, child: c),
               ),
             );
-            // PersistentNavBarNavigator.pushNewScreen(
-            //   context,
-            //   screen: Player(tempPath: tempPath, listSongs: listSongs,),
-            //   withNavBar: true,
-            //   pageTransitionAnimation: PageTransitionAnimation.sizeUp,
-            // );
             controller.miniPlayer(false);
           },
           child: Row(

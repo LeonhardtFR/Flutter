@@ -48,6 +48,9 @@ dependencies:
   # generator colors from image
   palette_generator: ^0.3.3+2
 
+  # bottom sheet component
+  sliding_up_panel: ^2.0.0+1
+
 
 flutter_icons:
   android: true

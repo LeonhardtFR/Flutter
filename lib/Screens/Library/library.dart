@@ -1,8 +1,4 @@
-import 'dart:io';
-import 'package:animations/animations.dart';
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:logger/logger.dart';
@@ -12,10 +8,7 @@ import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Controllers/settings_controller.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
-import 'package:osbrosound/Services/player_service.dart';
 import 'package:osbrosound/Widgets/search_bar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import '../Player/MiniPlayer.dart';
 
@@ -32,8 +25,6 @@ class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
   final libraryController = Get.put(LibraryController());
   final settingsController = Get.put(SettingsController());
-
-  // String? tempPath = '/storage/emulated/0/Music';
 
   TabController? tabController;
 
@@ -124,16 +115,32 @@ class _LibraryPageState extends State<LibraryPage>
                               libraryController.listSongs[selectedIndex],
                               selectedIndex);
 
-                          PersistentNavBarNavigator.pushNewScreen(
+                          // PersistentNavBarNavigator.pushNewScreen(
+                          //   context,
+                          //   screen: Player(
+                          //     tempPath: libraryController.tempPath!,
+                          //     listSongs: libraryController.listSongs,
+                          //   ),
+                          //   withNavBar: true,
+                          //   pageTransitionAnimation:
+                          //       PageTransitionAnimation.fade,
+                          // );
+
+                          Navigator.push(
                             context,
-                            screen: Player(
-                              tempPath: libraryController.tempPath!,
-                              listSongs: libraryController.listSongs,
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) => Player(
+                                tempPath: libraryController.tempPath!,
+                                listSongs: libraryController.listSongs,
+                              ),
+                              transitionDuration: const Duration(milliseconds: 500),
+                              transitionsBuilder: (_, a, __, c) => FadeTransition(
+                                opacity: a,
+                                child: c,
+                              ),
                             ),
-                            withNavBar: true,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.fade,
                           );
+
                           controller.miniPlayer(false);
                           controller.player(true);
                         }
@@ -337,36 +344,6 @@ class _MusicTabState extends State<MusicTab>
                   ),
                 ),
               );
-
-              // transitionsBuilder: (_, a, __, c) => SlideTransition(
-              //   position: Tween<Offset>(
-              //     begin: const Offset(0.0, 1.0),
-              //     end: Offset.zero,
-              //   ).animate(a),
-              //   child: c,
-              // ),
-
-              // FadeTransition(opacity: a, child: c),
-              // ),
-              // );
-
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => Player(
-              //               tempPath: widget.tempPath,
-              //               listSongs: widget.listSongs,
-              //             )));
-
-              // PersistentNavBarNavigator.pushNewScreen(
-              //   context,
-              //   screen: Player(
-              //     tempPath: widget.tempPath,
-              //     listSongs: widget.listSongs,
-              //   ),
-              //   withNavBar: true,
-              //   // pageTransitionAnimation: PageTransitionAnimation.fade,
-              // );
               controller.miniPlayer(false);
               controller.player(true);
             },

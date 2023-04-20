@@ -61,9 +61,10 @@ class _ButtonNavigationState extends State<ButtonNavigation> {
     if (index == 0) {
       radioAudioController.isPlaying.value = false;
       radioAudioController.stopRadio();
-    } else if (index == 2) {
-      playerController.isPlaying.value = false;
-      playerController.stopPlayer();
+      // } else if (index == 2) {
+      //   playerController.isPlaying.value = false;
+      //   playerController.stopPlayer();
+      // }
     }
   }
 
