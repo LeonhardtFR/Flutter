@@ -1,10 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/settings_controller.dart';
+import 'package:osbrosound/Screens/Player/Player.dart';
+import 'package:path_provider/path_provider.dart';
 import '../Helpers/audio_query.dart';
 
-class LibraryController extends GetxController {
+class LibraryController extends GetxController
+    with GetTickerProviderStateMixin {
   var tabIndex = 0.obs;
 
   // ALBUMS VARIABLES
@@ -19,6 +23,8 @@ class LibraryController extends GetxController {
   var genreTab = false.obs;
   var genreListIndex = 0.obs;
 
+  String tempPath = "";
+
   RxList listSongs = [].obs;
   final settingsController = Get.put(SettingsController());
 
@@ -26,7 +32,7 @@ class LibraryController extends GetxController {
   OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
 
   // De base, il ne détecte pas de musique dans la librairie
-  bool musicExist = false;
+  RxBool musicExist = false.obs;
 
   List<PlaylistModel> playlistDetails = [];
 
@@ -38,11 +44,42 @@ class LibraryController extends GetxController {
   List<String> sortedlistArtists = [];
   List<String> sortedlistGenres = [];
 
+  OverlayEntry? playerOverlayEntry;
+
   var logger = Logger(
     printer: PrettyPrinter(methodCount: 0, lineLength: 1),
   );
 
+  // Affiche le player (j'ai fais sa pour pouvoir affiché la librairie pendant que je ferme le player)
+  // + animation
+  // void showPlayer(context, tempPathPlayer, listSongsPlayer) {
+  //   final animationController = AnimationController(
+  //     vsync: this,
+  //     duration: Duration(milliseconds: 500),
+  //   );
+  //   playerOverlayEntry = OverlayEntry(builder: (context) {
+  //     return Player(
+  //       tempPath: tempPathPlayer!,
+  //       listSongs: listSongsPlayer,
+  //       onDismiss: () {
+  //         animationController.reverse().then((_) {
+  //           removePlayer();
+  //         });
+  //       },
+  //       animationController: animationController,
+  //     );
+  //   });
+  //   Overlay.of(context).insert(playerOverlayEntry!);
+  //   animationController.forward();
+  // }
+  //
+  // void removePlayer() {
+  //   playerOverlayEntry?.remove();
+  //   playerOverlayEntry = null;
+  // }
+
   Future<void> getMusic() async {
+    tempPath = (await getTemporaryDirectory()).path;
     try {
       // await Permission.audio.request();
       // await Permission.storage.request();
@@ -75,7 +112,7 @@ class LibraryController extends GetxController {
     var music = await offlineAudioQuery.getSongs();
 
     if (music.isNotEmpty) {
-      musicExist = true;
+      musicExist.value = true;
     }
     getAlbums(listSongs);
     getArtists(listSongs);

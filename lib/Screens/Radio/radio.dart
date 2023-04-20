@@ -15,7 +15,7 @@ class RadioScreen extends StatefulWidget {
 
 class _RadioScreenState extends State<RadioScreen> {
   final TextEditingController controllerUrl = TextEditingController(
-      text: 'https://api.radioking.io/widget/radio/bankable-radio/track/current');
+      text: 'https://listen.radioking.com/radio/242578/stream/286663');
 
   final RadioAudioController radioAudioController = Get.put(RadioAudioController());
 
@@ -85,7 +85,11 @@ class _RadioScreenState extends State<RadioScreen> {
             .colorScheme
             .background,
         appBar: AppBar(
-          title: const Text('Radio'),
+          title: Text('Radio', style: TextStyle(color: Theme
+            .of(context)
+            .textTheme
+            .bodyLarge!
+            .color)),
           backgroundColor: Theme
               .of(context)
               .colorScheme

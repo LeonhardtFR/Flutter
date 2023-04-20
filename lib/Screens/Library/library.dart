@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:animations/animations.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -32,8 +33,7 @@ class _LibraryPageState extends State<LibraryPage>
   final libraryController = Get.put(LibraryController());
   final settingsController = Get.put(SettingsController());
 
-  String? tempPath = '/storage/emulated/0/Music';
-  // String? get tempPath => settingsController.songSelectedDirectory.value;
+  // String? tempPath = '/storage/emulated/0/Music';
 
   TabController? tabController;
 
@@ -44,12 +44,6 @@ class _LibraryPageState extends State<LibraryPage>
   @override
   void initState() {
     super.initState();
-    // libraryController..addListener(() => mounted ? setState(() {}) : null);
-
-    // If libray is installed.listSong list change value, then update the list
-    // libraryController.listSongs.listen((event) {
-    //   setState(() {});
-    // });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var libraryController = Get.put(LibraryController());
@@ -72,128 +66,201 @@ class _LibraryPageState extends State<LibraryPage>
   Widget build(BuildContext context) {
     var libraryController = Get.put(LibraryController());
     var controller = Get.put(PlayerController());
-    print("BUILD LIBRARY");
     return Scaffold(
       body: Column(
         children: [
           Expanded(
-              child: DefaultTabController(
-            length: 4,
-            initialIndex: libraryController.tabIndex.value,
-            child: Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.background,
-              appBar: AppBar(
-                title: Text('Library',
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyLarge!.color)),
+              child: Obx(
+            () => DefaultTabController(
+              length: 4,
+              initialIndex: libraryController.tabIndex.value,
+              child: Scaffold(
                 backgroundColor: Theme.of(context).colorScheme.background,
-                bottom: TabBar(
-                  unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
-                  labelColor: Theme.of(context).colorScheme.secondary,
-                  indicatorColor: Theme.of(context).colorScheme.secondary,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  controller: tabController,
-                  onTap: (int index) {
-                    setState(() {
-                      tabController!.index = index;
-                      libraryController.tabIndex.value = index;
-                    });
-                  },
-                  tabs: const [
-                    Tab(text: 'Songs'),
-                    Tab(text: 'Albums'),
-                    Tab(text: 'Artists'),
-                    Tab(text: 'Genres'),
-                  ],
-                ),
-
-                // Icone de recherche dans l'AppBar
-                actions: [
-                  IconButton(
-                    color: Theme.of(context).iconTheme.color,
-                    onPressed: () async {
-                      SongModel? selectedSong = await showSearch(
-                        context: context,
-                        delegate: SongSearchDelegate(
-                          listSongs: libraryController.listSongs
-                              .toList()
-                              .cast<SongModel>(),
-                        ),
-                      );
-
-                      if (selectedSong != null) {
-                        int selectedIndex =
-                            libraryController.listSongs.indexOf(selectedSong);
-                        var controller = Get.put(PlayerController());
-                        controller.playMusic(
-                            libraryController.listSongs[selectedIndex],
-                            selectedIndex);
-
-                        PersistentNavBarNavigator.pushNewScreen(
-                          context,
-                          screen: Player(
-                            tempPath: tempPath!,
-                            listSongs: libraryController.listSongs,
-                          ),
-                          withNavBar: true,
-                          pageTransitionAnimation: PageTransitionAnimation.fade,
-                        );
-                        controller.miniPlayer(false);
-                        controller.player(true);
-                      }
+                appBar: AppBar(
+                  title: Text('Library',
+                      style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color)),
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                  bottom: TabBar(
+                    unselectedLabelColor:
+                        Theme.of(context).unselectedWidgetColor,
+                    labelColor: Theme.of(context).colorScheme.secondary,
+                    indicatorColor: Theme.of(context).colorScheme.secondary,
+                    indicatorSize: TabBarIndicatorSize.label,
+                    controller: tabController,
+                    onTap: (int index) {
+                      setState(() {
+                        tabController!.index = index;
+                        libraryController.tabIndex.value = index;
+                      });
                     },
-                    icon: const Icon(Icons.search),
+                    tabs: const [
+                      Tab(text: 'Songs'),
+                      Tab(text: 'Albums'),
+                      Tab(text: 'Artists'),
+                      Tab(text: 'Genres'),
+                    ],
                   ),
-                ],
-              ),
-              body: !libraryController.musicExist
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                      // child: Text('No music found in the storage', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
-                    )
-                  : TabBarView(
-                      controller: tabController,
-                      children: [
-                        Obx(
-                          () => MusicTab(
+
+                  // Icone de recherche dans l'AppBar
+                  actions: [
+                    IconButton(
+                      color: Theme.of(context).iconTheme.color,
+                      onPressed: () async {
+                        SongModel? selectedSong = await showSearch(
+                          context: context,
+                          delegate: SongSearchDelegate(
                             listSongs: libraryController.listSongs
                                 .toList()
                                 .cast<SongModel>(),
-                            tempPath: tempPath!,
                           ),
-                        ),
-                        AlbumsTab(
-                            tempPath: tempPath!,
-                            albums: libraryController.listAlbums,
-                            albumsList: libraryController.sortedlistAlbums),
-                        ArtistsTab(
-                            tempPath: tempPath!,
-                            artists: libraryController.listArtists,
-                            artistsList: libraryController.sortedlistArtists),
-                        GenresTab(
-                            tempPath: tempPath!,
-                            genres: libraryController.listGenres,
-                            genresList: libraryController.sortedlistGenres),
-                      ],
+                        );
+
+                        if (selectedSong != null) {
+                          int selectedIndex =
+                              libraryController.listSongs.indexOf(selectedSong);
+                          var controller = Get.put(PlayerController());
+                          controller.playMusic(
+                              libraryController.listSongs[selectedIndex],
+                              selectedIndex);
+
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: Player(
+                              tempPath: libraryController.tempPath!,
+                              listSongs: libraryController.listSongs,
+                            ),
+                            withNavBar: true,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.fade,
+                          );
+                          controller.miniPlayer(false);
+                          controller.player(true);
+                        }
+                      },
+                      icon: const Icon(Icons.search),
                     ),
+                  ],
+                ),
+                body: !libraryController.musicExist.value
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                        // child: Text('No music found in the storage', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
+                      )
+                    : TabBarView(
+                        controller: tabController,
+                        children: [
+                          MusicTab(
+                            listSongs: libraryController.listSongs
+                                .toList()
+                                .cast<SongModel>(),
+                            tempPath: libraryController.tempPath,
+                          ),
+                          AlbumsTab(
+                              tempPath: libraryController.tempPath,
+                              albums: libraryController.listAlbums,
+                              albumsList: libraryController.sortedlistAlbums),
+                          ArtistsTab(
+                              tempPath: libraryController.tempPath,
+                              artists: libraryController.listArtists,
+                              artistsList: libraryController.sortedlistArtists),
+                          GenresTab(
+                              tempPath: libraryController.tempPath,
+                              genres: libraryController.listGenres,
+                              genresList: libraryController.sortedlistGenres),
+                        ],
+                      ),
+              ),
             ),
           )),
-          if (libraryController.listSongs.isNotEmpty)
-            Obx(() => Container(
-                  color: Theme.of(context).colorScheme.background,
-                  child: AnimatedSize(
-                      duration: const Duration(milliseconds: 500),
-                      child: controller.miniPlayer.value
-                          ? MiniPlayer().mini(
-                              context,
-                              tempPath!,
-                              libraryController.listSongs
-                                  .toList()
-                                  .cast<SongModel>())
-                          : Container(
-                              color: Theme.of(context).colorScheme.primary,
-                            )),
-                )),
+
+          // Obx(() {
+          //   if (libraryController.listSongs.isNotEmpty) {
+          //     return Container(
+          //       height: 120,
+          //       width: double.infinity,
+          //       color: Theme.of(context).colorScheme.background,
+          //       child: AnimatedSwitcher(
+          //         duration: const Duration(milliseconds: 500),
+          //         transitionBuilder: (child, animation) {
+          //           return ScaleTransition(scale: animation, child: child);
+          //         },
+          //         child: controller.miniPlayer.value
+          //             ? MiniPlayer().mini(
+          //                 context,
+          //                 libraryController.tempPath,
+          //                 libraryController.listSongs
+          //                     .toList()
+          //                     .cast<SongModel>(),
+          //               )
+          //             : Player(
+          //                 tempPath: libraryController.tempPath,
+          //                 listSongs: libraryController.listSongs
+          //                     .toList()
+          //                     .cast<SongModel>(),
+          //               ),
+          //       ),
+          //     );
+          //   } else {
+          //     return const SizedBox.shrink();
+          //   }
+          // }),
+
+          // Obx(() {
+          //   if (libraryController.listSongs.isNotEmpty) {
+          //     return Container(
+          //       height: 120,
+          //       width: double.infinity,
+          //       color: Theme.of(context).colorScheme.background,
+          //       child: AnimatedSwitcher(
+          //         duration: const Duration(milliseconds: 500),
+          //         transitionBuilder: (child, animation) {
+          //           return ScaleTransition(scale: animation, child: child);
+          //         },
+          //         child: controller.miniPlayer.value
+          //             ? MiniPlayer().mini(
+          //                 context,
+          //                 libraryController.tempPath,
+          //                 libraryController.listSongs
+          //                     .toList()
+          //                     .cast<SongModel>(),
+          //               )
+          //             : Player(
+          //                 tempPath: libraryController.tempPath,
+          //                 listSongs: libraryController.listSongs
+          //                     .toList()
+          //                     .cast<SongModel>(),
+          //               ),
+          //       ),
+          //     );
+          //   } else {
+          //     return const SizedBox.shrink();
+          //   }
+          // }),
+
+          Obx(() {
+            if (libraryController.listSongs.isNotEmpty) {
+              return Container(
+                color: Theme.of(context).colorScheme.background,
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 500),
+                  child: controller.miniPlayer.value
+                      ? MiniPlayer().mini(
+                          context,
+                          libraryController.tempPath,
+                          libraryController.listSongs
+                              .toList()
+                              .cast<SongModel>())
+                      : Container(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                ),
+              );
+            } else {
+              return const SizedBox
+                  .shrink(); // "boite vide" + opti qu'un container ou un sizedbox classique
+            }
+          }),
         ],
       ),
     );
@@ -256,15 +323,50 @@ class _MusicTabState extends State<MusicTab>
               // )
               // );
 
-              PersistentNavBarNavigator.pushNewScreen(
+              Navigator.push(
                 context,
-                screen: Player(
-                  tempPath: widget.tempPath,
-                  listSongs: widget.listSongs,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => Player(
+                    tempPath: widget.tempPath,
+                    listSongs: widget.listSongs,
+                  ),
+                  transitionDuration: const Duration(milliseconds: 500),
+                  transitionsBuilder: (_, a, __, c) => FadeTransition(
+                    opacity: a,
+                    child: c,
+                  ),
                 ),
-                withNavBar: true,
-                pageTransitionAnimation: PageTransitionAnimation.fade,
               );
+
+              // transitionsBuilder: (_, a, __, c) => SlideTransition(
+              //   position: Tween<Offset>(
+              //     begin: const Offset(0.0, 1.0),
+              //     end: Offset.zero,
+              //   ).animate(a),
+              //   child: c,
+              // ),
+
+              // FadeTransition(opacity: a, child: c),
+              // ),
+              // );
+
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => Player(
+              //               tempPath: widget.tempPath,
+              //               listSongs: widget.listSongs,
+              //             )));
+
+              // PersistentNavBarNavigator.pushNewScreen(
+              //   context,
+              //   screen: Player(
+              //     tempPath: widget.tempPath,
+              //     listSongs: widget.listSongs,
+              //   ),
+              //   withNavBar: true,
+              //   // pageTransitionAnimation: PageTransitionAnimation.fade,
+              // );
               controller.miniPlayer(false);
               controller.player(true);
             },
@@ -363,7 +465,8 @@ class _AlbumsTabState extends State<AlbumsTab>
             style: ElevatedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary,
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                elevation: 0),
             onPressed: () {
               setState(() {
                 libraryController.albumTab(false);
@@ -419,9 +522,10 @@ class _AlbumsTabState extends State<AlbumsTab>
                     ),
                     subtitle: Text(
                       widget
-                          .albums[widget.albumsList[
-                              libraryController.albumListIndex.value]]![index]
-                          .artist!,
+                              .albums[widget.albumsList[libraryController
+                                  .albumListIndex.value]]![index]
+                              .artist ??
+                          'Unknown',
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           color: Theme.of(context).unselectedWidgetColor),
@@ -543,7 +647,8 @@ class _ArtistsTabTabState extends State<ArtistsTab>
             style: ElevatedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary,
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                elevation: 0),
             onPressed: () {
               setState(() {
                 libraryController.artistTab(false);
@@ -599,9 +704,10 @@ class _ArtistsTabTabState extends State<ArtistsTab>
                     ),
                     subtitle: Text(
                       widget
-                          .artists[widget.artistsList[
-                              libraryController.artistListIndex.value]]![index]
-                          .artist!,
+                              .artists[widget.artistsList[libraryController
+                                  .artistListIndex.value]]![index]
+                              .artist ??
+                          'Unknown',
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           color: Theme.of(context).unselectedWidgetColor),
@@ -722,9 +828,10 @@ class _GenresTabTabState extends State<GenresTab>
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                textStyle: const TextStyle(fontWeight: FontWeight.bold)),
+                foregroundColor: Theme.of(context).colorScheme.secondary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                elevation: 0),
             onPressed: () {
               setState(() {
                 libraryController.genreTab(false);
@@ -780,9 +887,10 @@ class _GenresTabTabState extends State<GenresTab>
                     ),
                     subtitle: Text(
                       widget
-                          .genres[widget.genresList[
-                              libraryController.genreListIndex.value]]![index]
-                          .genre!,
+                              .genres[widget.genresList[libraryController
+                                  .genreListIndex.value]]![index]
+                              .genre ??
+                          'Unknown',
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           color: Theme.of(context).unselectedWidgetColor),

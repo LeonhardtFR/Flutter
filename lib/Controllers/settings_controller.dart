@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:osbrosound/Controllers/libraryController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/Library/library.dart';
@@ -14,6 +15,10 @@ class SettingsController extends GetxController {
   final themeMode = 0.obs;
 
   var songSelectedDirectory = "".obs;
+
+  RxBool firstLaunch = false.obs;
+  ValueNotifier<bool> showWelcomeWidget = ValueNotifier(true);
+
 
   Future<void> saveTheme(int value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

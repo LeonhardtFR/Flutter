@@ -23,7 +23,9 @@ class _YoutubeHomeScreenState extends State<YoutubeHomeScreen> {
             backgroundColor: Theme.of(context).colorScheme.background,
             appBar: AppBar(
               elevation: 0,
-              title: Text('Youtube Search', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
+              title: Text('Youtube download',
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge!.color)),
               backgroundColor: Theme.of(context).colorScheme.background,
             ),
             body: Center(
@@ -53,7 +55,9 @@ class _YoutubeHomeScreenState extends State<YoutubeHomeScreen> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    child: Text('Télécharger', style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
+                    child: Text('Télécharger',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground)),
                     onPressed: () {
                       youtubeController.getAudio();
                     },

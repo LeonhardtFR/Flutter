@@ -1,17 +1,21 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YoutubeController extends GetxController {
   final TextEditingController controllerYtbUrl = TextEditingController();
+  var logger = Logger(
+    printer: PrettyPrinter(methodCount: 0, lineLength: 1),
+  );
 
   Future<String?> getAudio() async {
     try {
       final yt = YoutubeExplode();
       final youtubeVideo = await yt.videos.get(controllerYtbUrl.text);
-      final manifest = await yt.videos.streamsClient.getManifest(
-          youtubeVideo.id);
+      final manifest =
+          await yt.videos.streamsClient.getManifest(youtubeVideo.id);
 
       var youtubeAudio = manifest.audioOnly.first;
       var youtubeAudioStream = yt.videos.streamsClient.get(youtubeAudio);
@@ -46,10 +50,11 @@ class YoutubeController extends GetxController {
         await stream.pipe(fileStream);
         await fileStream.flush();
         await fileStream.close();
+        logger.i('Audio-only stream saved to ${file.path}');
         return file.path;
       }
     } catch (e) {
-      print('Error while getting the audio-only stream: $e');
+      logger.e('Error while getting the audio-only stream: $e');
     }
     return null;
   }

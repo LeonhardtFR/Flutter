@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class OfflineAudioQuery {
   static OnAudioQuery audioQuery = OnAudioQuery();
@@ -10,6 +11,12 @@ class OfflineAudioQuery {
   Future<void> requestPermission() async {
     while (!await audioQuery.permissionsStatus()) {
       await audioQuery.permissionsRequest();
+    }
+    if (await Permission.storage.isDenied) {
+      await Permission.storage.request();
+    }
+    if (await Permission.audio.isDenied) {
+      await Permission.audio.request();
     }
   }
 
@@ -126,6 +133,7 @@ class OfflineAudioQuery {
     bool gaplessPlayback = true,
     Widget? errorWidget,
     Widget? placeholder,
+    void Function(ImageProvider)? onImageLoaded,
   }) {
     return FutureBuilder<String>(
       future: queryNSave(
@@ -139,6 +147,10 @@ class OfflineAudioQuery {
       ),
       builder: (context, item) {
         if (item.data != null && item.data!.isNotEmpty) {
+          final File file = File(item.data!);
+          if (onImageLoaded != null) {
+            onImageLoaded(FileImage(file));
+          }
           return Card(
             elevation: elevation,
             shape: RoundedRectangleBorder(

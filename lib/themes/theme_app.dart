@@ -94,13 +94,13 @@ ThemeData appBarThemeApp(BuildContext context) {
       backgroundColor: Theme.of(context).colorScheme.background,
     ),
     inputDecorationTheme: theme.inputDecorationTheme.copyWith(
-      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground),
     ),
     textTheme: theme.textTheme.copyWith(
-      titleLarge: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      titleLarge: TextStyle(color: Theme.of(context).colorScheme.onBackground),
     ),
     textSelectionTheme: theme.textSelectionTheme.copyWith(
-      cursorColor: Theme.of(context).colorScheme.onSurface,
+      cursorColor: Theme.of(context).colorScheme.onBackground,
     ),
   );
 }
