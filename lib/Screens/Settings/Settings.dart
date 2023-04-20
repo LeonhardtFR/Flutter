@@ -122,7 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const _CustomListTile(
                     title: "Version",
                     icon: Icons.update,
-                    trailing: Text("0.1.4"),
+                    trailing: Text("0.2.0"),
                   ),
                 ],
               ),
@@ -212,7 +212,7 @@ void aboutAppModal(context) {
                     ?.copyWith(fontSize: 16)),
             const SizedBox(height: 16),
             Image(image: AssetImage("assets/cover.png"), height: 100),
-            Text("Version 0.1.4",
+            Text("Version 0.2.0",
                 style: Theme.of(context)
                     .textTheme
                     .displaySmall
