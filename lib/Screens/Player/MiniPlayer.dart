@@ -13,25 +13,30 @@ class MiniPlayer {
   mini(BuildContext context, String tempPath, List<SongModel> listSongs) {
     var controller = Get.find<PlayerController>();
     return Container(
-      // key: const Key('miniPlayer'),
       padding:
-          const EdgeInsets.only(bottom: 30.0, top: 10, left: 12.5, right: 12.5),
-      color: Theme.of(context).colorScheme.onSecondaryContainer,
+      const EdgeInsets.only(bottom: 30.0, top: 10, left: 12.5, right: 12.5),
+      color: Theme
+          .of(context)
+          .colorScheme
+          .onSecondaryContainer,
       child: Column(children: [
         GestureDetector(
           onTap: () {
             Navigator.push(
               context,
               PageRouteBuilder(
-                pageBuilder: (_, __, ___) => Player(
-                  tempPath: tempPath,
-                  listSongs: listSongs,
-                ),
+                // - -- --- => variable ignoré
+                pageBuilder: (_, __, ___) =>
+                    Player(
+                      tempPath: tempPath,
+                      listSongs: listSongs,
+                    ),
                 transitionDuration: const Duration(milliseconds: 500),
-                transitionsBuilder: (_, a, __, c) => FadeTransition(
-                  opacity: a,
-                  child: c,
-                ),
+                transitionsBuilder: (_, a, __, c) =>
+                    FadeTransition(
+                      opacity: a,
+                      child: c,
+                    ),
               ),
             );
             controller.miniPlayer(false);
@@ -46,7 +51,10 @@ class MiniPlayer {
                       controller.isPlaying.value
                           ? Icons.pause
                           : Icons.play_arrow,
-                      color: Theme.of(context).colorScheme.secondary),
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .secondary),
                   onPressed: () {
                     if (controller.isPlaying.value) {
                       controller.audioPlayer.pause();
@@ -61,16 +69,23 @@ class MiniPlayer {
                   text: listSongs[controller.playIndex.value].title,
                   style: TextStyle(
                       fontSize: 15,
-                      color: Theme.of(context).colorScheme.secondary),
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .secondary),
                   height: 20,
                   velocity: 35,
                 ),
               ),
               const SizedBox(width: 8.0),
               Text(
-                "[${listSongs[controller.playIndex.value].fileExtension.toUpperCase()}]",
+                "[${listSongs[controller.playIndex.value].fileExtension
+                    .toUpperCase()}]",
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .secondary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -78,7 +93,10 @@ class MiniPlayer {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 icon: Icon(Icons.stop,
-                    color: Theme.of(context).colorScheme.secondary),
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .secondary),
                 onPressed: () {
                   controller.miniPlayer(false);
                   controller.audioPlayer.pause();
@@ -93,11 +111,19 @@ class MiniPlayer {
           children: [
             Text(controller.position.value,
                 style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                TextStyle(color: Theme
+                    .of(context)
+                    .colorScheme
+                    .secondary)),
             Expanded(
               child: Slider(
-                  activeColor: Theme.of(context).colorScheme.secondary,
-                  inactiveColor: Theme.of(context).unselectedWidgetColor,
+                  activeColor: Theme
+                      .of(context)
+                      .colorScheme
+                      .secondary,
+                  inactiveColor: Theme
+                      .of(context)
+                      .unselectedWidgetColor,
                   min: const Duration(seconds: 0).inSeconds.toDouble(),
                   max: controller.maxDuration.value,
                   value: controller.value.value,
@@ -108,7 +134,10 @@ class MiniPlayer {
             ),
             Text(controller.duration.value,
                 style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                TextStyle(color: Theme
+                    .of(context)
+                    .colorScheme
+                    .secondary)),
           ],
         ),
       ]),

@@ -143,6 +143,7 @@ class _PlayerState extends State<Player> {
               const SizedBox(height: 16),
               Expanded(
                 child: Container(
+                  // identifiant unique pour le widget
                   key: const Key('player'),
                   padding: const EdgeInsets.all(8),
                   alignment: Alignment.center,
@@ -241,8 +242,9 @@ class _PlayerState extends State<Player> {
                                     children: [
                                       IconButton(
                                           onPressed: () {
-                                            // Je passe à la musique précédente dans la liste
+                                            // je passe à la musique précédente dans la liste
                                             try {
+                                              // recupere musique prec dans la liste et l'autre pour maj la valeur playindex dans playMusic
                                               controller.playMusic(
                                                   widget.listSongs[
                                                   controller.playIndex.value -

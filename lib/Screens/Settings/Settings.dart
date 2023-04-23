@@ -47,7 +47,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               : settingsController.themeMode.value = 0;
                           settingsController
                               .saveTheme(settingsController.themeMode.value);
-                          print(settingsController.themeMode.value.toString());
                           if (!value) {
                             settingsController.amoledMode(false);
                           }
@@ -211,7 +210,7 @@ void aboutAppModal(context) {
                     .displaySmall
                     ?.copyWith(fontSize: 16)),
             const SizedBox(height: 16),
-            Image(image: AssetImage("assets/cover.png"), height: 100),
+            const Image(image: AssetImage("assets/cover.png"), height: 100),
             Text("Version 0.2.0",
                 style: Theme.of(context)
                     .textTheme

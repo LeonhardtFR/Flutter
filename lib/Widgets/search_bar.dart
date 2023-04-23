@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -18,6 +16,9 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
 
   final libraryController = Get.put(LibraryController());
 
+  // buildAction + buildLeading + buildResults + buildSuggestions = méthode héritée de SearchDelegate
+
+  // construit les actions à afficher dans la barre de recherche (btn par exemple)
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -34,6 +35,7 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
     ];
   }
 
+  // construit le bouton de retour (ce qui a avant la barre de recherche)
   @override
   Widget buildLeading(BuildContext context) {
     return Container(
@@ -48,9 +50,13 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
     );
   }
 
+  // construit le résultat de la recherche mais pas utilisé car je me sert de buildSuggestions
+  // pour afficher les résultats
   @override
   Widget buildResults(BuildContext context) => Container();
 
+  // construit les résultats de la recherche, filtre les résultats en fonction de la query
+  // puis les "suggestion" sont affiché dans le ListView.builder
   @override
   Widget buildSuggestions(BuildContext context) {
     final suggestions = listSongs
@@ -60,10 +66,13 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
 
     return Container(
       color: Theme.of(context).colorScheme.primary,
+      // ListView.builder pour afficher les résultats de la recherche dans une liste déroulante
+      // construit uniquement les resultats visible à l'écran => meilleur perf
       child: ListView.builder(
         itemCount: suggestions.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (context, index) { // construit la liste en fonction de l'index
           final song = suggestions[index];
+          // listTile pour afficher les résultats de la recherche
           return ListTile(
             leading: OfflineAudioQuery.offlineArtworkWidget(
               id: song.id,
@@ -77,19 +86,25 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
               song.title,
               style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
             ),
+
             onTap: () {
               var controller = Get.put(PlayerController());
               int selectedIndex = listSongs.indexOf(song);
               controller.playMusic(listSongs[selectedIndex], selectedIndex);
 
-              PersistentNavBarNavigator.pushNewScreen(
+              Navigator.push(
                 context,
-                screen: Player(
-                  tempPath: libraryController.tempPath,
-                  listSongs: listSongs,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => Player(
+                    tempPath: libraryController.tempPath!,
+                    listSongs: libraryController.listSongs,
+                  ),
+                  transitionDuration: const Duration(milliseconds: 500),
+                  transitionsBuilder: (_, a, __, c) => FadeTransition(
+                    opacity: a,
+                    child: c,
+                  ),
                 ),
-                withNavBar: true,
-                pageTransitionAnimation: PageTransitionAnimation.fade,
               );
 
               controller.miniPlayer(false);

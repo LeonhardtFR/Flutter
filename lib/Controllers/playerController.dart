@@ -60,6 +60,7 @@ class PlayerController extends GetxController
     super.onClose();
   }
 
+  // mets a jour position/duree de la musique en écoutant AudioPlayer
   updatePosition() {
     audioPlayer.durationStream.listen((d) {
       duration(formatDuration(d));
@@ -76,6 +77,8 @@ class PlayerController extends GetxController
     audioPlayer.seek(duration);
   }
 
+  // prend une liste de chanson et un index de la chanson à jouer
+  // mets a jour l'index de la chanson en cours de lecture, la charge et la joue
   playMusic(songs, index) {
     playIndex.value = index;
     Uri uriSong = Uri.parse(songs.uri.toString());
@@ -108,6 +111,7 @@ class PlayerController extends GetxController
     }
   }
 
+  // renvoit une liste des 2 couleurs dominantes de l'image
   Future<List<Color>> getDominantColors(ImageProvider imageProvider) async {
     final PaletteGenerator paletteGenerator =
         await PaletteGenerator.fromImageProvider(
