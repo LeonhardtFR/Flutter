@@ -88,6 +88,8 @@ class OfflineAudioQuery {
         sortType: sortType, orderType: orderType, uriType: UriType.EXTERNAL);
   }
 
+  // sauvegarde l'image de couverture de l'album dans le dossier temporaire
+  // si elle n'existe pas déjà sinom retourne le chemin de l'image
   static Future<String> queryNSave({
     required int id,
     required ArtworkType type,
@@ -113,6 +115,9 @@ class OfflineAudioQuery {
     return file.path;
   }
 
+  // widget perso, pour afficher l'image de couverture de l'album dans une Card
+  // on utilise ici un FutureBuilder pour attendre que l'image soit sauvegardée
+  // avec la fonction queryNSave avant de l'afficher
   static Widget offlineArtworkWidget({
     required int id,
     required ArtworkType type,

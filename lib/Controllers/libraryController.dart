@@ -81,16 +81,7 @@ class LibraryController extends GetxController
   Future<void> getMusic() async {
     tempPath = (await getTemporaryDirectory()).path;
     try {
-      // await Permission.audio.request();
-      // await Permission.storage.request();
-      // await Permission.manageExternalStorage.request();
       await offlineAudioQuery.requestPermission();
-      // await Permission.storage.request();
-
-      // if(widget.takeAlbum != null) {
-      //   Logger.root.info("User take album from album page");
-      //   listSongs = widget.takeAlbum!;
-      // } else {
       logger.i("List all songs from library");
       List<SongModel> songs =
           List<SongModel>.from(await offlineAudioQuery.getSongs(
@@ -104,10 +95,7 @@ class LibraryController extends GetxController
     } catch (e) {
       logger.e("Error while requesting permission: $e");
     }
-    print("listSong : " + listSongs.toString());
 
-    // if (await Permission.storage.isGranted &&
-    //     await Permission.audio.isGranted) {
     logger.i("Permission granted");
     var music = await offlineAudioQuery.getSongs();
 
@@ -118,14 +106,20 @@ class LibraryController extends GetxController
     getArtists(listSongs);
     getGenres(listSongs);
   }
-  // }
 
+  // Parcourt chaque chanson de la liste et les classes par albums.
+  // Si l'album existe deja dans le dictionnaire alors on ajoute la chanson dans la liste de l'album
   Future<void> getAlbums(listSongs) async {
     for (int i = 0; i < listSongs.length; i++) {
       try {
+        // on verifie si le dictionnaire "listAlbums" contient une "clé" qui correspond à l'album de la chanson
+        // si l'artiste n'est pas défini on le mets dans la clé "Unknown"
+        // si l'album existe deja dans le dictionnaire on ajoute la chanson dans la liste de l'album
         if (listAlbums.containsKey(listSongs[i].album ?? "Unknown")) {
           listAlbums[listSongs[i].album ?? "Unknown"]!.add(listSongs[i]);
         } else {
+          // si l'album n'est pas dans le dictionnaire on le crée
+          // cree nouvelle entrée dans le dico avec l'album comme clé et la chanson comme valeur
           listAlbums[listSongs[i].album ?? "Unknown"] = [listSongs[i]];
           sortedlistAlbums.add(listSongs[i].album ?? "Unknown");
         }
@@ -135,6 +129,7 @@ class LibraryController extends GetxController
     }
   }
 
+  // pareil que pour les albums mais pour les artistes
   Future<void> getArtists(listSongs) async {
     for (int i = 0; i < listSongs.length; i++) {
       try {
@@ -150,6 +145,7 @@ class LibraryController extends GetxController
     }
   }
 
+  // pareil que pour les albums mais pour les genres
   Future<void> getGenres(listSongs) async {
     for (int i = 0; i < listSongs.length; i++) {
       try {

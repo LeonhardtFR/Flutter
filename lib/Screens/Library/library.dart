@@ -115,17 +115,6 @@ class _LibraryPageState extends State<LibraryPage>
                               libraryController.listSongs[selectedIndex],
                               selectedIndex);
 
-                          // PersistentNavBarNavigator.pushNewScreen(
-                          //   context,
-                          //   screen: Player(
-                          //     tempPath: libraryController.tempPath!,
-                          //     listSongs: libraryController.listSongs,
-                          //   ),
-                          //   withNavBar: true,
-                          //   pageTransitionAnimation:
-                          //       PageTransitionAnimation.fade,
-                          // );
-
                           Navigator.push(
                             context,
                             PageRouteBuilder(
@@ -133,8 +122,10 @@ class _LibraryPageState extends State<LibraryPage>
                                 tempPath: libraryController.tempPath!,
                                 listSongs: libraryController.listSongs,
                               ),
-                              transitionDuration: const Duration(milliseconds: 500),
-                              transitionsBuilder: (_, a, __, c) => FadeTransition(
+                              transitionDuration:
+                                  const Duration(milliseconds: 500),
+                              transitionsBuilder: (_, a, __, c) =>
+                                  FadeTransition(
                                 opacity: a,
                                 child: c,
                               ),
