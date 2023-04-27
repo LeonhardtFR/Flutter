@@ -70,7 +70,8 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
       // construit uniquement les resultats visible à l'écran => meilleur perf
       child: ListView.builder(
         itemCount: suggestions.length,
-        itemBuilder: (context, index) { // construit la liste en fonction de l'index
+        itemBuilder: (context, index) {
+          // construit la liste en fonction de l'index
           final song = suggestions[index];
           // listTile pour afficher les résultats de la recherche
           return ListTile(
@@ -86,7 +87,6 @@ class SongSearchDelegate extends SearchDelegate<SongModel> {
               song.title,
               style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
             ),
-
             onTap: () {
               var controller = Get.put(PlayerController());
               int selectedIndex = listSongs.indexOf(song);

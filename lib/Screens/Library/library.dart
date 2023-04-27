@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:logger/logger.dart';
@@ -287,60 +288,74 @@ class _MusicTabState extends State<MusicTab>
     var controller = Get.put(PlayerController());
     super.build(context);
 
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 25),
-      itemCount: widget.listSongs.length,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
-        return Container(
-          margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
-          child: ListTile(
-            leading: OfflineAudioQuery.offlineArtworkWidget(
-              id: widget.listSongs[index].id,
-              type: ArtworkType.AUDIO,
-              tempPath: widget.tempPath,
-              fileName: widget.listSongs[index].displayNameWOExt,
-            ),
-            title: Text(
-              widget.listSongs[index].title.trim() != ''
-                  ? widget.listSongs[index].title
-                  : widget.listSongs[index].displayNameWOExt,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-            ),
-            subtitle: Text(
-              widget.listSongs[index].artist!,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
-            ),
-            onTap: () {
-              controller.playMusic(widget.listSongs[index], index);
-              // Get.to(() => Player(
-              //   tempPath: widget.tempPath,
-              //   listSongs: widget.listSongs,
-              // )
-              // );
+    return AnimationLimiter(
+      child: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 25),
+        itemCount: widget.listSongs.length,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (context, index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 500),
+            child: SlideAnimation(
+              duration: const Duration(milliseconds: 500),
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                  child: ListTile(
+                    leading: OfflineAudioQuery.offlineArtworkWidget(
+                      id: widget.listSongs[index].id,
+                      type: ArtworkType.AUDIO,
+                      tempPath: widget.tempPath,
+                      fileName: widget.listSongs[index].displayNameWOExt,
+                    ),
+                    title: Text(
+                      widget.listSongs[index].title.trim() != ''
+                          ? widget.listSongs[index].title
+                          : widget.listSongs[index].displayNameWOExt,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    subtitle: Text(
+                      widget.listSongs[index].artist!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: Theme.of(context).unselectedWidgetColor),
+                    ),
+                    onTap: () {
+                      controller.playMusic(widget.listSongs[index], index);
+                      // Get.to(() => Player(
+                      //   tempPath: widget.tempPath,
+                      //   listSongs: widget.listSongs,
+                      // )
+                      // );
 
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => Player(
-                    tempPath: widget.tempPath,
-                    listSongs: widget.listSongs,
-                  ),
-                  transitionDuration: const Duration(milliseconds: 500),
-                  transitionsBuilder: (_, a, __, c) => FadeTransition(
-                    opacity: a,
-                    child: c,
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => Player(
+                            tempPath: widget.tempPath,
+                            listSongs: widget.listSongs,
+                          ),
+                          transitionDuration: const Duration(milliseconds: 500),
+                          transitionsBuilder: (_, a, __, c) => FadeTransition(
+                            opacity: a,
+                            child: c,
+                          ),
+                        ),
+                      );
+                      controller.miniPlayer(false);
+                      controller.player(true);
+                    },
                   ),
                 ),
-              );
-              controller.miniPlayer(false);
-              controller.player(true);
-            },
-          ),
-        );
-      },
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

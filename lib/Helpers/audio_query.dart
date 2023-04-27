@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class OfflineAudioQuery {
   static OnAudioQuery audioQuery = OnAudioQuery();
@@ -88,7 +90,26 @@ class OfflineAudioQuery {
         sortType: sortType, orderType: orderType, uriType: UriType.EXTERNAL);
   }
 
-  // sauvegarde l'image de couverture de l'album dans le dossier temporaire
+  // récupère l'image de couverture de l'album sur le web via l'API de last.fm
+  Future<String> fetchAlbumArtworkOnline(String artist, String album) async {
+    const apiKey = '616ec98d57f40fde3ea3dc657ea13961';
+    final response = await http.get(Uri.parse(
+        'https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=$apiKey&artist=$artist&album=$album&format=json'));
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['album'] != null &&
+          jsonResponse['album']['image'] != null) {
+        final imageUrl = jsonResponse['album']['image'].last['#text'];
+        if (imageUrl.isNotEmpty) {
+          return imageUrl;
+        }
+      }
+    }
+    return '';
+  }
+
+  // récupere "hors ligne" et sauvegarde l'image de couverture de l'album dans le dossier temporaire
   // si elle n'existe pas déjà sinom retourne le chemin de l'image
   static Future<String> queryNSave({
     required int id,
@@ -123,6 +144,10 @@ class OfflineAudioQuery {
     required ArtworkType type,
     required String tempPath,
     required String fileName,
+
+    // Online parameters
+    // required String artist,
+    // required String album,
     int size = 200,
     int quality = 100,
     ArtworkFormat format = ArtworkFormat.PNG,
