@@ -1,15 +1,24 @@
 import 'dart:typed_data';
-import 'dart:ui';
+
 import 'package:audio_service/audio_service.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
+import 'package:ffmpeg_kit_flutter/log.dart';
+import 'package:ffmpeg_kit_flutter/log_callback.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_waveform/just_waveform.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/radioPlayerController.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:image/image.dart' as img;
+import 'dart:io';
+
 
 class PlayerController extends GetxController
     with SingleGetTickerProviderMixin {
@@ -33,6 +42,10 @@ class PlayerController extends GetxController
   var showMiniPlayer = false.obs;
 
   var lastPlayedIndex = -1.obs;
+
+  RxList<int> waveformSamples = <int>[].obs;
+
+
 
   late final AnimationController animationController;
   late final AnimationController secondaryAnimationController;
@@ -79,9 +92,11 @@ class PlayerController extends GetxController
 
   // prend une liste de chanson et un index de la chanson à jouer
   // mets a jour l'index de la chanson en cours de lecture, la charge et la joue
-  playMusic(songs, index) {
+  playMusic(SongModel songs, int index) async {
     playIndex.value = index;
     Uri uriSong = Uri.parse(songs.uri.toString());
+    String localFilePath = songs.data;
+
     try {
       radioAudioController.stopRadio();
       audioPlayer.setAudioSource(AudioSource.uri(uriSong,
@@ -92,10 +107,25 @@ class PlayerController extends GetxController
               artist: songs.artist)));
       audioPlayer.play();
       isPlaying(true);
+      print("TEST");
+      extractWaveformSamples(localFilePath); // extraire les échantillons
       updatePosition();
     } catch (e) {
-      print("Error");
+      print("Error PlayMusic: $e");
     }
+  }
+
+
+  Future<File> copyContentUriToFile(Uri contentUri) async {
+    Directory tempDir = await getTemporaryDirectory();
+    String tempFileName = '${DateTime.now().millisecondsSinceEpoch}.temp';
+    File tempFile = File('${tempDir.path}/$tempFileName');
+
+    ByteData data = await rootBundle.load(contentUri.toString());
+    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    await tempFile.writeAsBytes(bytes);
+
+    return tempFile;
   }
 
   Future<void> stopPlayer() async {
@@ -134,6 +164,52 @@ class PlayerController extends GetxController
       contrastColor?.color ?? Colors.black,
     ];
   }
+
+  void logCallback(Log log, String? message) {
+    print("[$log] $message");
+  }
+
+
+
+
+// extrait les échantillons de la forme d'onde d'un fichier audio et stocke dans une variable
+Future<void> extractWaveformSamples(String audioPath) async {
+    print("Extracting waveform samples...");
+    final audioFile = File(audioPath);
+    final exists = await audioFile.exists();
+    if (!exists) {
+      print("Audio file does not exist");
+      return;
+    }
+
+    final tempDir = await getTemporaryDirectory();
+    final waveFileName = '${audioPath.split('/').last}_waveform.wave';
+    final waveFile = File('${tempDir.path}/$waveFileName');
+
+    final progressStream = JustWaveform.extract(
+      audioInFile: audioFile,
+      waveOutFile: waveFile,
+      zoom: const WaveformZoom.pixelsPerSecond(100),
+    );
+    progressStream.listen((waveformProgress) {
+      print('Progress: %${(100 * waveformProgress.progress).toInt()}');
+      if (waveformProgress.waveform != null) {
+        final waveform = waveformProgress.waveform!;
+        const numSamples = 100;
+        final duration = waveform.duration;
+        waveformSamples.assignAll(List.generate(numSamples, (i) {
+          final position = duration * (i / numSamples);
+          final pixel = waveform.positionToPixel(position);
+          return waveform.getPixelMin(pixel.toInt()).abs();
+        }));
+      }
+    }, onError: (error) {
+      print("Error: $error");
+    });
+  }
+
+
+
 }
 
 // verifie si la duree est null (si oui retourn 00:00) sinom
@@ -152,3 +228,4 @@ String formatDuration(Duration? d) {
 
   return "$formattedHours$formattedMinutes:$formattedSeconds";
 }
+

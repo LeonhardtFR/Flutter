@@ -16,7 +16,6 @@ dependencies:
   just_audio: ^0.9.31
   on_audio_query: ^2.6.2
   permission_handler: ^10.2.0
-#  logging: ^1.1.1
   logger: ^1.3.0
   path_provider: ^2.0.14
   audio_service: ^0.18.9
@@ -54,6 +53,12 @@ dependencies:
   # animation list song
   flutter_staggered_animations: ^1.1.1
 
+  # représentation graphique des formes d'onde audio
+  flutter_audio_waveforms: ^1.2.1+8
+
+  just_waveform: ^0.0.4
+
+  ffmpeg_kit_flutter: ^5.1.0
 
 flutter_icons:
   android: true

@@ -296,9 +296,9 @@ class _MusicTabState extends State<MusicTab>
         itemBuilder: (context, index) {
           return AnimationConfiguration.staggeredList(
             position: index,
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 900),
             child: SlideAnimation(
-              duration: const Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 900),
               verticalOffset: 50.0,
               child: FadeInAnimation(
                 child: Container(

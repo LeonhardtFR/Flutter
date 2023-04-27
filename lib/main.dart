@@ -4,6 +4,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -29,6 +30,10 @@ Future<void> main() async {
   settingsController.themeMode.value = await settingsController.loadTheme();
   settingsController.songSelectedDirectory.value =
       await settingsController.loadSongFolder();
+
+  // masque la barre de navigation du système sur les tel Android (on laisse la barre notif)
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
+
   runApp(MyApp());
 }
 
@@ -42,6 +47,8 @@ class MyApp extends StatelessWidget {
   SettingsController settingsController = Get.put(SettingsController());
   RadioAudioController radioAudioController = Get.put(RadioAudioController());
   PlayerController playerController = Get.put(PlayerController());
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +69,7 @@ class MyApp extends StatelessWidget {
       home: Stack(
         children: [
           const ButtonNavigation(),
+          // Si c la premiere fois qu'on lance l'app
           if (settingsController.firstLaunch.value)
           const WelcomeWidget(),
         ],

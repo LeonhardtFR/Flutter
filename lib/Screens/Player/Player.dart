@@ -1,11 +1,10 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:osbrosound/Controllers/playerController.dart';
+import 'package:osbrosound/Helpers/WaveformSliderPainter.dart';
 import 'package:osbrosound/Helpers/audio_query.dart';
 import 'package:osbrosound/Widgets/animated_text.dart';
 import 'package:osbrosound/Widgets/background_container.dart';
@@ -74,7 +73,7 @@ class _PlayerState extends State<Player> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            icon: Icon(Icons.arrow_downward,
+            icon: Icon(Icons.keyboard_arrow_down_rounded,
                 color: Theme.of(context).colorScheme.secondary),
             onPressed: () {
               Navigator.pop(context);
@@ -192,6 +191,139 @@ class _PlayerState extends State<Player> {
                               ),
 
                               const SizedBox(height: 75),
+
+
+                              // Row(
+                              //   children: [
+                              //     Text(
+                              //         controller.position.value,
+                              //         style: TextStyle(
+                              //             fontSize: 16,
+                              //             color: Theme.of(context).colorScheme.onBackground
+                              //         )
+                              //     ),
+                              //     Expanded(
+                              //       child: LayoutBuilder(
+                              //         builder: (context, constraints) {
+                              //           if (controller.waveformSamples.isEmpty) {
+                              //             // Afficher un slider classique si les échantillons de forme d'onde n'ont pas été extraits
+                              //             return Slider(
+                              //                             activeColor: Theme.of(context)
+                              //                                 .colorScheme
+                              //                                 .secondary,
+                              //                             inactiveColor: Theme.of(context)
+                              //                                 .unselectedWidgetColor,
+                              //                             min: const Duration(seconds: 0)
+                              //                                 .inSeconds
+                              //                                 .toDouble(),
+                              //                             max: controller.maxDuration.value,
+                              //                             value: controller.value.value,
+                              //                             onChanged: (value) {
+                              //                               controller.changeDurationToSeconds(
+                              //                                   value.toInt());
+                              //                               value = value;
+                              //                             });
+                              //           } else {
+                              //             // Afficher un slider de forme d'onde si les échantillons ont été extraits
+                              //             return GestureDetector(
+                              //               behavior: HitTestBehavior.translucent,
+                              //               onTapDown: (details) {
+                              //                 double newValue = details.localPosition.dx /
+                              //                     constraints.maxWidth *
+                              //                     controller.maxDuration.value;
+                              //                 controller.changeDurationToSeconds(newValue.toInt());
+                              //               },
+                              //               child: Padding(
+                              //                 padding: const EdgeInsets.symmetric(vertical: 20),
+                              //                 child: SizedBox(
+                              //                   height: 0.5,
+                              //                   width: double.infinity,
+                              //                   child: CustomPaint(
+                              //                     painter: WaveformSliderPainter(
+                              //                       samples: controller.waveformSamples,
+                              //                       color: Theme.of(context)
+                              //                           .colorScheme
+                              //                           .secondary
+                              //                           .withOpacity(0.5),
+                              //                       progressColor: Theme.of(context).colorScheme.secondary,
+                              //                       progress: controller.value.value /
+                              //                           controller.maxDuration.value,
+                              //                     ),
+                              //                   ),
+                              //                 ),
+                              //               ),
+                              //             );
+                              //           }
+                              //         },
+                              //       ),
+                              //     ),
+                              //     Text(
+                              //         controller.duration.value,
+                              //         style: TextStyle(
+                              //             fontSize: 16,
+                              //             color: Theme.of(context).colorScheme.onBackground
+                              //         )
+                              //     ),
+                              //   ],
+                              // ),
+
+
+
+                              // Row(
+                              //   children: [
+                              //     Text(controller.position.value,
+                              //         style: TextStyle(
+                              //             fontSize: 16,
+                              //             color: Theme.of(context).colorScheme.onBackground)),
+                              //     Expanded(
+                              //       child: LayoutBuilder(
+                              //         builder: (context, constraints) => GestureDetector(
+                              //           behavior: HitTestBehavior.translucent,
+                              //           onTapDown: (details) {
+                              //             double newValue = details.localPosition.dx /
+                              //                 constraints.maxWidth *
+                              //                 controller.maxDuration.value;
+                              //             controller.changeDurationToSeconds(newValue.toInt());
+                              //           },
+                              //           child: Padding(
+                              //             padding: const EdgeInsets.symmetric(vertical: 20),
+                              //             child: SizedBox(
+                              //               height: 0.5,
+                              //               width: double.infinity,
+                              //               child: Obx(
+                              //                     () => CustomPaint(
+                              //                   painter: WaveformSliderPainter(
+                              //                     samples: controller.waveformSamples,
+                              //                     color: Theme.of(context)
+                              //                         .colorScheme
+                              //                         .secondary
+                              //                         .withOpacity(0.5),
+                              //                     progressColor: Theme.of(context).colorScheme.secondary,
+                              //                     progress: controller.value.value /
+                              //                         controller.maxDuration.value,
+                              //                   ),
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     Text(controller.duration.value,
+                              //         style: TextStyle(
+                              //             fontSize: 16,
+                              //             color: Theme.of(context).colorScheme.onBackground)),
+                              //   ],
+                              // ),
+
+
+
+
+
+
+
+
+
 
                               Row(
                                 children: [
@@ -322,6 +454,8 @@ class _PlayerState extends State<Player> {
                           ),
                         ),
                       ),
+
+                      // SLIDING UP PANEL
                       SlidingUpPanel(
                         controller: _panelController,
                         maxHeight: MediaQuery.of(context).size.height * 0.4,
