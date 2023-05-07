@@ -1,3 +1,4 @@
+import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
@@ -26,6 +27,8 @@ class _LibraryPageState extends State<LibraryPage>
     with TickerProviderStateMixin {
   final libraryController = Get.put(LibraryController());
   final settingsController = Get.put(SettingsController());
+  final searchTextController = TextEditingController();
+
 
   TabController? tabController;
 
@@ -36,6 +39,11 @@ class _LibraryPageState extends State<LibraryPage>
   @override
   void initState() {
     super.initState();
+
+    searchTextController.addListener(() {
+      libraryController.updateSuggestions(searchTextController.text, libraryController.listSongs.toList().cast<SongModel>());
+    });
+
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var libraryController = Get.put(LibraryController());
@@ -58,6 +66,7 @@ class _LibraryPageState extends State<LibraryPage>
   Widget build(BuildContext context) {
     var libraryController = Get.put(LibraryController());
     var controller = Get.put(PlayerController());
+    final Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: Column(
         children: [
@@ -96,6 +105,9 @@ class _LibraryPageState extends State<LibraryPage>
 
                   // Icone de recherche dans l'AppBar
                   actions: [
+
+
+
                     IconButton(
                       color: Theme.of(context).iconTheme.color,
                       onPressed: () async {

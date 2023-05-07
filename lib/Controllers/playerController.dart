@@ -107,8 +107,7 @@ class PlayerController extends GetxController
               artist: songs.artist)));
       audioPlayer.play();
       isPlaying(true);
-      print("TEST");
-      extractWaveformSamples(localFilePath); // extraire les échantillons
+      // extractWaveformSamples(localFilePath); // extraire les échantillons de la forme d'onde, désactivé pour le moment
       updatePosition();
     } catch (e) {
       print("Error PlayMusic: $e");

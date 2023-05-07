@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:osbrosound/Controllers/playerController.dart';
 import 'package:osbrosound/Controllers/settings_controller.dart';
 import 'package:osbrosound/Screens/Player/Player.dart';
 import 'package:path_provider/path_provider.dart';
@@ -78,6 +79,8 @@ class LibraryController extends GetxController
   //   playerOverlayEntry = null;
   // }
 
+  final suggestions = <SongModel>[].obs;
+
   Future<void> getMusic() async {
     tempPath = (await getTemporaryDirectory()).path;
     try {
@@ -106,6 +109,13 @@ class LibraryController extends GetxController
     getArtists(listSongs);
     getGenres(listSongs);
   }
+
+  void updateSuggestions(String query, List<SongModel> listSongs) {
+    suggestions.value = listSongs
+        .where((song) => song.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  }
+
 
   // Parcourt chaque chanson de la liste et les classes par albums.
   // Si l'album existe deja dans le dictionnaire alors on ajoute la chanson dans la liste de l'album

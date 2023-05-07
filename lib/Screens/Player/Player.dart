@@ -70,6 +70,7 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -110,8 +111,8 @@ class _PlayerState extends State<Player> {
                           fileName: widget.listSongs[controller.playIndex.value]
                               .displayNameWOExt,
                           tempPath: widget.tempPath,
-                          width: 350,
-                          height: 350,
+                          width: screenSize.width * 0.85,
+                          height: screenSize.height * 0.40,
                           filterQuality: FilterQuality.high,
                           onImageLoaded: (image) async {
                             controller.backgroundColor.value =
@@ -123,10 +124,10 @@ class _PlayerState extends State<Player> {
                     // widget uniquement dispo avec Stack(), positione le widget enfant de maniere precise
                     // on positionne le bouton "info" en bas à droite de la pochette de maniere Fixe
                     Positioned(
-                      bottom: 10,
-                      right: 35,
+                      bottom: screenSize.height * 0.02,
+                      right: screenSize.width * 0.09,
                       child: Container(
-                        width: 40,
+                        width: screenSize.width * 0.1,
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.6),
                           shape: BoxShape.circle,
@@ -143,7 +144,7 @@ class _PlayerState extends State<Player> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: screenSize.height * 0.02),
               Expanded(
                 child: Container(
                   // identifiant unique pour le widget
@@ -174,7 +175,7 @@ class _PlayerState extends State<Player> {
                                         .colorScheme
                                         .onBackground),
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: screenSize.height * 0.02),
 
                               // SOUS TITRE MUSIQUE
                               AnimatedText(
@@ -186,11 +187,11 @@ class _PlayerState extends State<Player> {
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onBackground),
-                                height: 20,
+                                height: screenSize.height * 0.001,
                                 velocity: 35,
                               ),
 
-                              const SizedBox(height: 75),
+                              SizedBox(height: screenSize.height * 0.02),
 
 
                               // Row(
@@ -359,7 +360,7 @@ class _PlayerState extends State<Player> {
                                 ],
                               ),
 
-                              const SizedBox(height: 16),
+                              SizedBox(height: screenSize.height * 0.02),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -431,7 +432,7 @@ class _PlayerState extends State<Player> {
                                 ],
                               ),
 
-                              const SizedBox(height: 16),
+                              SizedBox(height: screenSize.height * 0.02),
 
                               IconButton(
                                 onPressed: () {
@@ -458,7 +459,7 @@ class _PlayerState extends State<Player> {
                       // SLIDING UP PANEL
                       SlidingUpPanel(
                         controller: _panelController,
-                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                        maxHeight: screenSize.height * 0.4,
                         minHeight: 0,
                         panel: Container(
                           decoration: BoxDecoration(
@@ -468,10 +469,10 @@ class _PlayerState extends State<Player> {
                           ),
                           child: Column(
                             children: [
-                              const SizedBox(height: 16),
+                              SizedBox(height: screenSize.height * 0.02),
                               Container(
-                                width: 50,
-                                height: 4,
+                                width: screenSize.width * 0.2,
+                                height: screenSize.height * 0.005,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -479,7 +480,7 @@ class _PlayerState extends State<Player> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: screenSize.height * 0.02),
                               Expanded(
                                 child: ListView.builder(
                                   itemCount: widget.listSongs.length,
@@ -497,8 +498,8 @@ class _PlayerState extends State<Player> {
                                           fileName: widget.listSongs[index]
                                               .displayNameWOExt,
                                           tempPath: widget.tempPath,
-                                          width: 50,
-                                          height: 50,
+                                          width: screenSize.width * 0.1,
+                                          height: screenSize.width * 0.1,
                                           filterQuality: FilterQuality.high,
                                         ),
                                         title: Text(
